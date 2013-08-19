@@ -1,15 +1,16 @@
 package appa
 
 import (
+	"strings"
 	"testing"
 )
 
 func Test_LiteralParseString(t *testing.T) {
-	input := "foo"
+	input := CreateStringBuffer(strings.NewReader("foo"))
 
 	g := NewGrammar()
 
-	ast, err := g.Literal("foo").ParseString(input)
+	ast, err := g.Literal("foo").Parse(input)
 	if err != nil {
 		t.Error(err)
 		return

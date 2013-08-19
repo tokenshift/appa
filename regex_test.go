@@ -1,11 +1,12 @@
 package appa
 
 import (
+	"strings"
 	"testing"
 )
 
 func Test_RegexParseString(t *testing.T) {
-	input := "12345"
+	input := CreateStringBuffer(strings.NewReader("12345"))
 
 	g := NewGrammar()
 
@@ -15,7 +16,7 @@ func Test_RegexParseString(t *testing.T) {
 		return
 	}
 
-	ast, err := rx.ParseString(input)
+	ast, err := rx.Parse(input)
 	if err != nil {
 		t.Error(err)
 		return

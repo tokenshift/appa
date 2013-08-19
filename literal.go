@@ -27,10 +27,19 @@ func (lit Literal) And(r Rule) Rule {
 	}
 }
 
-func (lit Literal) ParseString(input string) (ast Node, err error) {
-	if input == lit.Text {
+func (lit Literal) Match(input StringBuffer, offset int) int {
+	if input.ReadLiteral(lit.Text, offset) {
+		return len(lit.Text)
+	} else {
+		return -1
+	}
+}
+
+func (lit Literal) Parse(input StringBuffer) (ast Node, err error) {
+	if matched := lit.Match(input, 0); matched > 0 {
+		input.Discard(matched)
 		ast = Node {
-			input,
+			lit.Text,
 			make([]Node, 0, 0),
 		}
 	} else {

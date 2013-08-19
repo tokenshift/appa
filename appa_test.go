@@ -1,11 +1,12 @@
 package appa
 
 import (
+	"strings"
 	"testing"
 )
 
 func Test_SimpleProgram(t *testing.T) {
-	var source = "1+2+3"
+	var source = CreateStringBuffer(strings.NewReader("1+2+3"))
 
 	var g = NewGrammar()
 
@@ -17,7 +18,7 @@ func Test_SimpleProgram(t *testing.T) {
 	exp.AddRule(num.And(oper).And(exp))
 	exp.AddRule(num)
 
-	ast, err := exp.ParseString(source)
+	ast, err := exp.Parse(source)
 	if err != nil {
 		t.Error(err)
 		return
@@ -27,12 +28,6 @@ func Test_SimpleProgram(t *testing.T) {
 		t.Errorf("Expected <EXP>")
 	}
 
-	if len(ast.Children) != 2 {
-		t.Errorf("Expected 2 children")
-	}
-
-	expected := "(EXP 1 + (EXP 2 + (EXP 3)))"
-	if ast.String() != expected {
-		t.Errorf("Expected %v, got %v", expected, ast)
-	}
+	assertIntEquals(t, 3, len(ast.Children))
+	assertStringEquals(t, "(EXP 1 + (EXP 2 + (EXP 3)))", ast.String())
 }
