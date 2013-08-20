@@ -53,3 +53,7 @@ func (r Regex) Optional() Rule {
 func (r sequence) Optional() Rule {
 	return optional { r }
 }
+
+func (r trim) Optional() Rule {
+	return optional { r }
+}

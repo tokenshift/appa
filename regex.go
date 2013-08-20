@@ -45,8 +45,9 @@ func (rx Regex) Match(input StringBuffer, offset int) int {
 
 func (rx Regex) Parse(input StringBuffer) (ast Node, err error) {
 	if matches := rx.Match(input, 0); matches > 0 {
+		text := input.Consume(matches)
 		ast = Node {
-			input.Consume(matches),
+			text,
 			make([]Node, 0, 0),
 		}
 	} else {
@@ -54,4 +55,8 @@ func (rx Regex) Parse(input StringBuffer) (ast Node, err error) {
 	}
 
 	return
+}
+
+func (rx Regex) String() string {
+	return fmt.Sprintf("/%v/", rx.Pattern)
 }

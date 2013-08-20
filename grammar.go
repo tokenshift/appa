@@ -34,6 +34,10 @@ type Rule interface {
 
 	// Parses and consumes the matched portion of the input.
 	Parse(input StringBuffer) (Node, error)
+
+	// Ignores/discards leading whitespace when attempting to match
+	// this rule.
+	Trim() Rule
 }
 
 type grammar struct {

@@ -90,11 +90,11 @@ func (b *stringBuffer) ReadPattern(pattern *regexp.Regexp, offset int) (bool, st
 	b.prepare(256 + offset)
 
 	match := pattern.FindStringIndex(b.buffer[offset:])
-	if match == nil {
+	if match == nil || match[0] != 0 {
 		return false, ""
 	}
 
-	return true, b.buffer[match[0]:match[1]]
+	return true, b.buffer[match[0] + offset:match[1] + offset]
 }
 
 func (b *stringBuffer) String() string {

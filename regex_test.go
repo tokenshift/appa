@@ -28,4 +28,13 @@ func Test_RegexParseString(t *testing.T) {
 	if len(ast.Children) > 0 {
 		t.Errorf("Expected %d children, got %d.", len(ast.Children))
 	}
+
+
+	input = CreateStringBuffer(strings.NewReader("foofoofoo"))
+
+	rx, _ = g.Regex("[a-z]{3}")
+
+	assertIntEquals(t, 3, rx.Match(input, 0))
+	assertIntEquals(t, 3, rx.Match(input, 3))
+	assertIntEquals(t, 3, rx.Match(input, 6))
 }
