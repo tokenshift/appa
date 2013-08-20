@@ -29,6 +29,9 @@ type Rule interface {
 	// Returns the number of characters matched, or -1 on failure.
 	Match(input StringBuffer, offset int) int
 
+	// Makes the rule optional.
+	Optional() Rule
+
 	// Parses and consumes the matched portion of the input.
 	Parse(input StringBuffer) (Node, error)
 }

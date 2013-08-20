@@ -9,6 +9,17 @@ type sequence struct {
 	rules []Rule
 }
 
+func makeSequence(rules ...Rule) sequence {
+	var seq sequence
+	seq.rules = make([]Rule, len(rules), len(rules))
+
+	for i, rule := range(rules) {
+		seq.rules[i] = rule
+	}
+
+	return seq
+}
+
 func (s sequence) And(r Rule) Rule {
 	return &sequence {
 		append(s.rules, r),
@@ -20,7 +31,7 @@ func (s sequence) Match(input StringBuffer, offset int) int {
 	
 	for _, rule := range(s.rules) {
 		matched := rule.Match(input, offset)
-		if matched <= 0 {
+		if matched < 0 {
 			return -1
 		}
 

@@ -12,6 +12,10 @@ type Node struct {
 func (n Node) String() string {
 	var buffer bytes.Buffer
 
+	if n.Name == "" && len(n.Children) == 0 {
+		return "()"
+	}
+
 	if len(n.Children) > 0 {
 		buffer.WriteString("(")
 	}
