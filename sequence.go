@@ -5,11 +5,6 @@ import (
 	"fmt"
 )
 
-// Concatenates the rules into a single rule.
-func Seq(rules ...Rule) Rule {
-	return Sequence(rules)
-}
-
 type Sequence []Rule
 
 func (s Sequence) Match(input StringBuffer, offset int) int {

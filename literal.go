@@ -2,17 +2,6 @@ package appa
 
 import "fmt"
 
-// A string literal that can act as
-// either a parse rule or a node.
-type Lit string
-
-func (lit Lit) And(r Rule) Rule {
-	rules := make([]Rule, 2, 2)
-	rules[0] = lit
-	rules[1] = r
-	return Sequence(rules)
-}
-
 func (lit Lit) Children() []Node {
 	return Empty
 }

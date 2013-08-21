@@ -1,40 +1,18 @@
 package appa
 
-import (
-	"fmt"
-)
+import "fmt"
 
-type NonTerminal struct {
+type nonTerminal struct {
 	g *grammar
-	Name string
+	name string
 }
 
-func (g *grammar) NonTerminal(name string) (nt NonTerminal) {
-	nt, ok := g.nonterminals[name]
-	if !ok {
-		nt = NonTerminal {
-			g,
-			name,
-		}
-		g.nonterminals[name] = nt
-		g.rules[name] = make([]Rule, 0, 0)
-	}
-	return
+func (nt nonTerminal) AddRule(r Rule) {
+	nt.g.rules[nt.name] = append(nt.g.rules[nt.name], r)
 }
 
-func (nt NonTerminal) AddRule(r Rule) {
-	nt.g.rules[nt.Name] = append(nt.g.rules[nt.Name], r)
-}
-
-func (nt NonTerminal) And(r Rule) Rule {
-	rules := make([]Rule, 2, 2)
-	rules[0] = nt
-	rules[1] = r
-	return Sequence(rules)
-}
-
-func (nt NonTerminal) Match(input StringBuffer, offset int) int {
-	for _, rule := range nt.g.rules[nt.Name] {
+func (nt nonTerminal) Match(input StringBuffer, offset int) int {
+	for _, rule := range nt.g.rules[nt.name] {
 		if matched := rule.Match(input, offset); matched > 0 {
 			return matched
 		}
@@ -43,8 +21,12 @@ func (nt NonTerminal) Match(input StringBuffer, offset int) int {
 	return -1
 }
 
-func (nt NonTerminal) Parse(input StringBuffer) (ast Node, err error) {
-	for _, rule := range nt.g.rules[nt.Name] {
+func (nt nonTerminal) Name() string {
+	return nt.name
+}
+
+func (nt nonTerminal) Parse(input StringBuffer) (ast Node, err error) {
+	for _, rule := range nt.g.rules[nt.name] {
 		var result Node
 		result, err = rule.Parse(input)
 
@@ -53,10 +35,10 @@ func (nt NonTerminal) Parse(input StringBuffer) (ast Node, err error) {
 			// associated with the node.
 			if seq, ok := result.(NodeList); ok {
 				// Flatten the sequence into the non-terminal.
-				ast = NamedNode(nt.Name, seq.Children()...)
+				ast = NamedNode(nt.name, seq.Children()...)
 			} else {
 				// Use the node as is.
-				ast = NamedNode(nt.Name, result)
+				ast = NamedNode(nt.name, result)
 			}
 			return
 		}
@@ -66,6 +48,6 @@ func (nt NonTerminal) Parse(input StringBuffer) (ast Node, err error) {
 	return
 }
 
-func (nt NonTerminal) String() string {
+func (nt nonTerminal) String() string {
 	return fmt.Sprintf("<%s>", nt.Name)
 }

@@ -5,16 +5,6 @@ import "fmt"
 
 var Empty NodeList = make([]Node, 0, 0)
 
-// Represents a node in an abstract
-// synax tree.
-type Node interface {
-	// The text value of the node, or nil.
-	Val() fmt.Stringer
-
-	// Any children of the node.
-	Children() []Node
-}
-
 // A sequence of parsed nodes.
 type NodeList []Node
 
@@ -22,9 +12,27 @@ func (nodes NodeList) Children() []Node {
 	return nodes
 }
 
+func (nodes NodeList) String() string {
+	var b bytes.Buffer
+
+	first := true
+	for _, node := range(nodes) {
+		if !first {
+			b.WriteString(" ")
+		}
+
+		b.WriteString(node.String())
+
+		first = false
+	}
+
+	return b.String()
+}
+
 func (nodes NodeList) Val() fmt.Stringer {
 	return nil
 }
+
 
 // A node with a name and children.
 // Used to represent non-terminals.

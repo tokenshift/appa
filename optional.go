@@ -2,11 +2,6 @@ package appa
 
 import "fmt"
 
-// Makes matching the rule optional.
-func Opt(r Rule) Rule {
-	return optional { r }
-}
-
 type optional struct {
 	rule Rule
 }

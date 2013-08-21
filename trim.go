@@ -5,20 +5,6 @@ import (
 	"regexp"
 )
 
-// Discards leading whitespace before attempting
-// to match the rule.
-func Trim(r Rule) Rule {
-	if seq, ok := r.(Sequence); ok {
-		// Trim applies to all children of the sequence.
-		for i, rule := range(seq) {
-			seq[i] = Trim(rule)
-		}
-		return seq
-	} else {
-		return trim { r }
-	}
-}
-
 var rx_trim *regexp.Regexp = regexp.MustCompile("\\s+")
 
 type trim struct {
