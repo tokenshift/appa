@@ -5,14 +5,24 @@ import (
 	"regexp"
 )
 
+// Discards leading whitespace before attempting
+// to match the rule.
+func Trim(r Rule) Rule {
+	if seq, ok := r.(Sequence); ok {
+		// Trim applies to all children of the sequence.
+		for i, rule := range(seq) {
+			seq[i] = Trim(rule)
+		}
+		return seq
+	} else {
+		return trim { r }
+	}
+}
+
 var rx_trim *regexp.Regexp = regexp.MustCompile("\\s+")
 
 type trim struct {
 	rule Rule
-}
-
-func (t trim) And(r Rule) Rule {
-	return Sequence([]Rule{t, r})
 }
 
 func (t trim) Match(buffer StringBuffer, offset int) int {
@@ -41,24 +51,4 @@ func (t trim) Parse(buffer StringBuffer) (ast Node, err error) {
 
 func (t trim) String() string {
 	return fmt.Sprintf("{trim} %v", t.rule)
-}
-
-func (r Lit) Trim() Rule {
-	return trim { r }
-}
-
-func (r NonTerminal) Trim() Rule {
-	return trim { r }
-}
-
-func (r optional) Trim() Rule {
-	return trim { r }
-}
-
-func (r Regex) Trim() Rule {
-	return trim { r }
-}
-
-func (t trim) Trim() Rule {
-	return t
 }

@@ -15,7 +15,7 @@ func Test_SimpleProgram(t *testing.T) {
 	num := g.Regex("\\d+")
 	oper := g.Lit("+")
 
-	exp.AddRule(num.And(oper).And(exp))
+	exp.AddRule(Seq(num, oper, exp))
 	exp.AddRule(num)
 
 	ast, err := exp.Parse(source)

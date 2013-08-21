@@ -5,11 +5,12 @@ import (
 	"fmt"
 )
 
-type Sequence []Rule
-
-func (s Sequence) And(r Rule) Rule {
-	return Sequence(append(s, r))
+// Concatenates the rules into a single rule.
+func Seq(rules ...Rule) Rule {
+	return Sequence(rules)
 }
+
+type Sequence []Rule
 
 func (s Sequence) Match(input StringBuffer, offset int) int {
 	origOffset := offset
@@ -63,15 +64,4 @@ func (s Sequence) String() string {
 	}
 
 	return buffer.String()
-}
-
-// Trim applies to all of the children of the sequence.
-func (s Sequence) Trim() Rule {
-	seq := make([]Rule, len(s), len(s))
-
-	for i, rule := range(s) {
-		seq[i] = rule.Trim()
-	}
-	
-	return Sequence(seq)
 }

@@ -1,11 +1,14 @@
 package appa
 
-type optional struct {
-	rule Rule
+import "fmt"
+
+// Makes matching the rule optional.
+func Opt(r Rule) Rule {
+	return optional { r }
 }
 
-func (o optional) And(r Rule) Rule {
-	return Sequence([]Rule{o, r})
+type optional struct {
+	rule Rule
 }
 
 func (o optional) Match(buffer StringBuffer, offset int) int {
@@ -29,28 +32,6 @@ func (o optional) Parse(buffer StringBuffer) (node Node, err error) {
 	return
 }
 
-
-
-func (r Lit) Optional() Rule {
-	return optional { r }
-}
-
-func (r NonTerminal) Optional() Rule {
-	return optional { r }
-}
-
-func (r optional) Optional() Rule {
-	return r
-}
-
-func (r Regex) Optional() Rule {
-	return optional { r }
-}
-
-func (r Sequence) Optional() Rule {
-	return optional { r }
-}
-
-func (r trim) Optional() Rule {
-	return optional { r }
+func (o optional) String() string {
+	return fmt.Sprintf("[%v]", o.rule)
 }

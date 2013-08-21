@@ -9,11 +9,12 @@ func Test_OptionalLit(t *testing.T) {
 	g := NewGrammar()
 
 	nt := g.NonTerminal("NT")
-	nt.AddRule(g.Lit("111").
-		And(g.Lit("222")).
-		And(g.Lit("333").Optional()).
-		And(g.Lit("444")).
-		And(g.Lit("555")))
+	nt.AddRule(Seq(
+		g.Lit("111"),
+		g.Lit("222"),
+		Opt(g.Lit("333")),
+		g.Lit("444"),
+		g.Lit("555")))
 
 
 	input := CreateStringBuffer(strings.NewReader("111222444555"))

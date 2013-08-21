@@ -7,7 +7,7 @@ import (
 
 func Test_TrimLit(t *testing.T) {
 	g := NewGrammar()
-	foo := g.Lit("foo").Trim()
+	foo := Trim(g.Lit("foo"))
 
 	ast, err := foo.Parse(CreateStringBuffer(strings.NewReader("foo")))
 
@@ -31,7 +31,7 @@ func Test_TrimSequence(t *testing.T) {
 	g := NewGrammar()
 	foo := g.Regex("[a-z]{3}")
 	test := g.NonTerminal("TEST")
-	test.AddRule(foo.And(foo).And(foo).Trim())
+	test.AddRule(Trim(Seq(foo, foo, foo)))
 
 	ast, err := test.Parse(CreateStringBuffer(strings.NewReader("foofoofoo")))
 
