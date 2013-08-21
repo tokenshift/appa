@@ -51,15 +51,15 @@ func (nt NonTerminal) Parse(input StringBuffer) (ast Node, err error) {
 		result, err = rule.Parse(input)
 
 		if err == nil {
-			ast.Name = nt.Name
-
-			if len(result.Children) == 0 {
-				ast.Children = make([]Node, 1, 1)
-				ast.Children[0] = result
+			// TODO: generalize this branch into a reduction rule
+			// associated with the node.
+			if seq, ok := result.(NodeList); ok {
+				// Flatten the sequence into the non-terminal.
+				ast = NamedNode(nt.Name, seq.Children()...)
 			} else {
-				ast.Children = result.Children
+				// Use the node as is.
+				ast = NamedNode(nt.Name, result)
 			}
-
 			return
 		}
 	}

@@ -23,10 +23,7 @@ func (o optional) Parse(buffer StringBuffer) (node Node, err error) {
 	if matched > 0 {
 		node, err = o.rule.Parse(buffer)
 	} else {
-		node = Node {
-			"",
-			make([]Node, 0, 0),
-		}
+		node = nil
 	}
 
 	return
@@ -34,7 +31,7 @@ func (o optional) Parse(buffer StringBuffer) (node Node, err error) {
 
 
 
-func (r Literal) Optional() Rule {
+func (r Lit) Optional() Rule {
 	return optional { r }
 }
 

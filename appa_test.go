@@ -12,8 +12,8 @@ func Test_SimpleProgram(t *testing.T) {
 
 	exp := g.NonTerminal("EXP")
 
-	num, _ := g.Regex("\\d+")
-	oper := g.Literal("+")
+	num := g.Regex("\\d+")
+	oper := g.Lit("+")
 
 	exp.AddRule(num.And(oper).And(exp))
 	exp.AddRule(num)
@@ -24,10 +24,7 @@ func Test_SimpleProgram(t *testing.T) {
 		return
 	}
 
-	if ast.Name != "EXP" {
-		t.Errorf("Expected <EXP>")
-	}
-
-	assertIntEquals(t, 3, len(ast.Children))
-	assertStringEquals(t, "(EXP 1 + (EXP 2 + (EXP 3)))", ast.String())
+	assertStringerEquals(t, "EXP", ast.Val())
+	assertIntEquals(t, 3, len(ast.Children()))
+	assertNodeStringEquals(t, "(EXP 1 + (EXP 2 + (EXP 3)))", ast)
 }

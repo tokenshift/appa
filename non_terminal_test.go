@@ -1,17 +1,15 @@
 package appa
 
-import (
-	"strings"
-	"testing"
-)
+import "strings"
+import "testing"
 
 func Test_ReadNonTerminal(t *testing.T) {
 	g := NewGrammar()
 
 	foo := g.NonTerminal("FOO")
 
-	foo.AddRule(g.Literal("foo"))
-	foo.AddRule(g.Literal("bar"))
+	foo.AddRule(g.Lit("foo"))
+	foo.AddRule(g.Lit("bar"))
 
 	input := CreateStringBuffer(strings.NewReader("testfoobartest"))
 
@@ -39,6 +37,9 @@ func Test_ReadNonTerminal(t *testing.T) {
 		t.Error(err)
 	}
 
-	assertStringEquals(t, "(FOO foo)", lit1.String())
-	assertStringEquals(t, "(FOO bar)", lit2.String())
+	assertIntEquals(t, 1, len(lit1.Children()))
+	assertIntEquals(t, 1, len(lit2.Children()))
+
+	assertNodeStringEquals(t, "(FOO foo)", lit1)
+	assertNodeStringEquals(t, "(FOO bar)", lit2)
 }

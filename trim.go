@@ -43,7 +43,7 @@ func (t trim) String() string {
 	return fmt.Sprintf("{trim} %v", t.rule)
 }
 
-func (r Literal) Trim() Rule {
+func (r Lit) Trim() Rule {
 	return trim { r }
 }
 

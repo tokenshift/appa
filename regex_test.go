@@ -10,11 +10,7 @@ func Test_RegexParseString(t *testing.T) {
 
 	g := NewGrammar()
 
-	rx, err := g.Regex("\\d+")
-	if err != nil {
-		t.Error(err)
-		return
-	}
+	rx := g.Regex("\\d+")
 
 	ast, err := rx.Parse(input)
 	if err != nil {
@@ -22,17 +18,12 @@ func Test_RegexParseString(t *testing.T) {
 		return
 	}
 
-	if ast.Name != "12345" {
-		t.Errorf("Expected \"%v\", got \"%v\".", "12345", ast.Name)
-	}
-	if len(ast.Children) > 0 {
-		t.Errorf("Expected %d children, got %d.", len(ast.Children))
-	}
-
+	assertStringerEquals(t, "12345", ast.Val())
+	assertIntEquals(t, 0, len(ast.Children()))
 
 	input = CreateStringBuffer(strings.NewReader("foofoofoo"))
 
-	rx, _ = g.Regex("[a-z]{3}")
+	rx = g.Regex("[a-z]{3}")
 
 	assertIntEquals(t, 3, rx.Match(input, 0))
 	assertIntEquals(t, 3, rx.Match(input, 3))

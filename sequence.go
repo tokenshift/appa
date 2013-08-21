@@ -41,27 +41,24 @@ func (s sequence) Match(input StringBuffer, offset int) int {
 	return offset - origOffset
 }
 
-func (s sequence) Parse(input StringBuffer) (ast Node, err error) {
+func (s sequence) Parse(input StringBuffer) (node Node, err error) {
 	if s.Match(input, 0) <= 0 {
+		node = nil
 		err = fmt.Errorf("Failed to match sequence: %s", s)
 		return
 	}
 
 	nodes := make([]Node, len(s.rules), len(s.rules))
 	for i, rule := range(s.rules) {
-		ast, err = rule.Parse(input)
+		node, err = rule.Parse(input)
 		if err != nil {
 			return
 		}
 
-		nodes[i] = ast
+		nodes[i] = node
 	}
 
-	ast = Node {
-		"",
-		nodes,
-	}
-
+	node = NodeList(nodes)
 	return
 }
 

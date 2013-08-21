@@ -5,9 +5,9 @@ import (
 	"testing"
 )
 
-func Test_TrimLiteral(t *testing.T) {
+func Test_TrimLit(t *testing.T) {
 	g := NewGrammar()
-	foo := g.Literal("foo").Trim()
+	foo := g.Lit("foo").Trim()
 
 	ast, err := foo.Parse(CreateStringBuffer(strings.NewReader("foo")))
 
@@ -15,7 +15,7 @@ func Test_TrimLiteral(t *testing.T) {
 		t.Error(err)
 	}
 
-	assertStringEquals(t, "foo", ast.String())
+	assertStringerEquals(t, "foo", ast.Val())
 
 
 	ast, err = foo.Parse(CreateStringBuffer(strings.NewReader(" \tfoo")))
@@ -24,12 +24,12 @@ func Test_TrimLiteral(t *testing.T) {
 		t.Error(err)
 	}
 
-	assertStringEquals(t, "foo", ast.String())
+	assertStringerEquals(t, "foo", ast.Val())
 }
 
 func Test_TrimSequence(t *testing.T) {
 	g := NewGrammar()
-	foo, _ := g.Regex("[a-z]{3}")
+	foo := g.Regex("[a-z]{3}")
 	test := g.NonTerminal("TEST")
 	test.AddRule(foo.And(foo).And(foo).Trim())
 
@@ -39,7 +39,7 @@ func Test_TrimSequence(t *testing.T) {
 		t.Error(err)
 	}
 
-	assertStringEquals(t, "(TEST foo foo foo)", ast.String())
+	assertNodeStringEquals(t, "(TEST foo foo foo)", ast)
 
 
 	ast, err = test.Parse(CreateStringBuffer(strings.NewReader(" foofoofoo")))
@@ -47,6 +47,8 @@ func Test_TrimSequence(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
+
+	assertNodeStringEquals(t, "(TEST foo foo foo)", ast)
 	
 
 	ast, err = test.Parse(CreateStringBuffer(strings.NewReader("foofoo foo")))
@@ -55,7 +57,7 @@ func Test_TrimSequence(t *testing.T) {
 		t.Error(err)
 	}
 
-	assertStringEquals(t, "(TEST foo foo foo)", ast.String())
+	assertNodeStringEquals(t, "(TEST foo foo foo)", ast)
 
 
 	ast, err = test.Parse(CreateStringBuffer(strings.NewReader(" \tfoo foo\tfoo")))
@@ -64,5 +66,5 @@ func Test_TrimSequence(t *testing.T) {
 		t.Error(err)
 	}
 
-	assertStringEquals(t, "(TEST foo foo foo)", ast.String())
+	assertNodeStringEquals(t, "(TEST foo foo foo)", ast)
 }

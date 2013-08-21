@@ -1,24 +1,12 @@
 package appa
 
-import (
-	"fmt"
-)
+import "fmt"
 
-type Literal struct {
-	Text string
-}
+// A string literal that can act as
+// either a parse rule or a node.
+type Lit string
 
-func (g *grammar) Literal(text string) (lit Literal) {
-	lit, ok := g.literals[text]
-	if !ok {
-		lit = Literal {
-			text,
-		}
-	}
-	return
-}
-
-func (lit Literal) And(r Rule) Rule {
+func (lit Lit) And(r Rule) Rule {
 	rules := make([]Rule, 2, 2)
 	rules[0] = lit
 	rules[1] = r
@@ -27,24 +15,34 @@ func (lit Literal) And(r Rule) Rule {
 	}
 }
 
-func (lit Literal) Match(input StringBuffer, offset int) int {
-	if input.ReadLiteral(lit.Text, offset) {
-		return len(lit.Text)
+func (lit Lit) Children() []Node {
+	return Empty
+}
+
+func (lit Lit) Match(input StringBuffer, offset int) int {
+	if input.ReadLiteral(string(lit), offset) {
+		return len(lit)
 	} else {
 		return -1
 	}
 }
 
-func (lit Literal) Parse(input StringBuffer) (ast Node, err error) {
+func (lit Lit) Parse(input StringBuffer) (ast Node, err error) {
 	if matched := lit.Match(input, 0); matched > 0 {
 		input.Discard(matched)
-		ast = Node {
-			lit.Text,
-			make([]Node, 0, 0),
-		}
+		ast = lit
 	} else {
-		err = fmt.Errorf("Expected literal '%v'.", lit.Text)
+		ast = nil
+		err = fmt.Errorf("Expected literal '%v'.", lit)
 	}
 
 	return
+}
+
+func (lit Lit) String() string {
+	return string(lit)
+}
+
+func (lit Lit) Val() fmt.Stringer {
+	return lit
 }

@@ -12,9 +12,9 @@ func Test_SimpleSequence(t *testing.T) {
 		make([]Rule, 0, 0),
 	}
 
-	seq.rules = append(seq.rules, g.Literal("1"))
-	seq.rules = append(seq.rules, g.Literal("2"))
-	seq.rules = append(seq.rules, g.Literal("3"))
+	seq.rules = append(seq.rules, g.Lit("1"))
+	seq.rules = append(seq.rules, g.Lit("2"))
+	seq.rules = append(seq.rules, g.Lit("3"))
 
 	input := CreateStringBuffer(strings.NewReader("123"))
 

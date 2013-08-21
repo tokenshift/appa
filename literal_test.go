@@ -10,16 +10,12 @@ func Test_LiteralParseString(t *testing.T) {
 
 	g := NewGrammar()
 
-	ast, err := g.Literal("foo").Parse(input)
+	ast, err := g.Lit("foo").Parse(input)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	if ast.Name != "foo" {
-		t.Errorf("Expected \"%v\", got \"%v\".", "foo", ast.Name)
-	}
-	if len(ast.Children) > 0 {
-		t.Errorf("Expected %d children, got %d.", len(ast.Children))
-	}
+	assertStringerEquals(t, "foo", ast.Val())
+	assertIntEquals(t, 0, len(ast.Children()))
 }
