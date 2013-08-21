@@ -30,9 +30,7 @@ func (nt NonTerminal) And(r Rule) Rule {
 	rules := make([]Rule, 2, 2)
 	rules[0] = nt
 	rules[1] = r
-	return sequence {
-		rules,
-	}
+	return Sequence(rules)
 }
 
 func (nt NonTerminal) Match(input StringBuffer, offset int) int {

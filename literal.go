@@ -10,9 +10,7 @@ func (lit Lit) And(r Rule) Rule {
 	rules := make([]Rule, 2, 2)
 	rules[0] = lit
 	rules[1] = r
-	return sequence {
-		rules,
-	}
+	return Sequence(rules)
 }
 
 func (lit Lit) Children() []Node {

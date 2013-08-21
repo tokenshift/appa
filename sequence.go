@@ -5,31 +5,16 @@ import (
 	"fmt"
 )
 
-type sequence struct {
-	rules []Rule
+type Sequence []Rule
+
+func (s Sequence) And(r Rule) Rule {
+	return Sequence(append(s, r))
 }
 
-func makeSequence(rules ...Rule) sequence {
-	var seq sequence
-	seq.rules = make([]Rule, len(rules), len(rules))
-
-	for i, rule := range(rules) {
-		seq.rules[i] = rule
-	}
-
-	return seq
-}
-
-func (s sequence) And(r Rule) Rule {
-	return &sequence {
-		append(s.rules, r),
-	}
-}
-
-func (s sequence) Match(input StringBuffer, offset int) int {
+func (s Sequence) Match(input StringBuffer, offset int) int {
 	origOffset := offset
 
-	for _, rule := range(s.rules) {
+	for _, rule := range(s) {
 		matched := rule.Match(input, offset)
 		if matched < 0 {
 			return -1
@@ -41,15 +26,15 @@ func (s sequence) Match(input StringBuffer, offset int) int {
 	return offset - origOffset
 }
 
-func (s sequence) Parse(input StringBuffer) (node Node, err error) {
+func (s Sequence) Parse(input StringBuffer) (node Node, err error) {
 	if s.Match(input, 0) <= 0 {
 		node = nil
 		err = fmt.Errorf("Failed to match sequence: %s", s)
 		return
 	}
 
-	nodes := make([]Node, len(s.rules), len(s.rules))
-	for i, rule := range(s.rules) {
+	nodes := make([]Node, len(s), len(s))
+	for i, rule := range(s) {
 		node, err = rule.Parse(input)
 		if err != nil {
 			return
@@ -62,12 +47,12 @@ func (s sequence) Parse(input StringBuffer) (node Node, err error) {
 	return
 }
 
-func (s sequence) String() string {
+func (s Sequence) String() string {
 	var buffer bytes.Buffer
 
 	first := true
 
-	for _, rule := range(s.rules) {
+	for _, rule := range(s) {
 		if !first {
 			buffer.WriteString(" ")
 		}
@@ -81,14 +66,12 @@ func (s sequence) String() string {
 }
 
 // Trim applies to all of the children of the sequence.
-func (s sequence) Trim() Rule {
-	seq := sequence {
-		make([]Rule, len(s.rules), len(s.rules)),
-	}
+func (s Sequence) Trim() Rule {
+	seq := make([]Rule, len(s), len(s))
 
-	for i, rule := range(s.rules) {
-		seq.rules[i] = rule.Trim()
+	for i, rule := range(s) {
+		seq[i] = rule.Trim()
 	}
 	
-	return seq
+	return Sequence(seq)
 }

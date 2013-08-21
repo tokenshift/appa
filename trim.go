@@ -12,7 +12,7 @@ type trim struct {
 }
 
 func (t trim) And(r Rule) Rule {
-	return makeSequence(t, r)
+	return Sequence([]Rule{t, r})
 }
 
 func (t trim) Match(buffer StringBuffer, offset int) int {

@@ -10,12 +10,7 @@ type Regex struct {
 }
 
 func (rx Regex) And(r Rule) Rule {
-	rules := make([]Rule, 2, 2)
-	rules[0] = rx
-	rules[1] = r
-	return sequence {
-		rules,
-	}
+	return Sequence([]Rule{rx, r})
 }
 
 func (rx Regex) Match(input StringBuffer, offset int) int {

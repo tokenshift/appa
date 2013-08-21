@@ -5,7 +5,7 @@ type optional struct {
 }
 
 func (o optional) And(r Rule) Rule {
-	return makeSequence(o, r)
+	return Sequence([]Rule{o, r})
 }
 
 func (o optional) Match(buffer StringBuffer, offset int) int {
@@ -47,7 +47,7 @@ func (r Regex) Optional() Rule {
 	return optional { r }
 }
 
-func (r sequence) Optional() Rule {
+func (r Sequence) Optional() Rule {
 	return optional { r }
 }
 
