@@ -2,6 +2,11 @@ package appa
 
 import "regexp"
 
+// Matches the end of the input.
+func Eof() Rule {
+	return eof{}
+}
+
 // A string literal that can act as
 // either a parse rule or a node.
 type Lit string

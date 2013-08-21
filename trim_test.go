@@ -15,7 +15,7 @@ func Test_TrimLit(t *testing.T) {
 		t.Error(err)
 	}
 
-	assertStringerEquals(t, "foo", ast.Val())
+	assertStringerEquals(t, "foo", ast[0].Val())
 
 
 	ast, err = foo.Parse(CreateStringBuffer(strings.NewReader(" \tfoo")))
@@ -24,7 +24,7 @@ func Test_TrimLit(t *testing.T) {
 		t.Error(err)
 	}
 
-	assertStringerEquals(t, "foo", ast.Val())
+	assertStringerEquals(t, "foo", ast[0].Val())
 }
 
 func Test_TrimSequence(t *testing.T) {
@@ -39,7 +39,7 @@ func Test_TrimSequence(t *testing.T) {
 		t.Error(err)
 	}
 
-	assertNodeStringEquals(t, "(TEST foo foo foo)", ast)
+	assertNodeStringEquals(t, "(TEST foo foo foo)", ast[0])
 
 
 	ast, err = test.Parse(CreateStringBuffer(strings.NewReader(" foofoofoo")))
@@ -48,7 +48,7 @@ func Test_TrimSequence(t *testing.T) {
 		t.Error(err)
 	}
 
-	assertNodeStringEquals(t, "(TEST foo foo foo)", ast)
+	assertNodeStringEquals(t, "(TEST foo foo foo)", ast[0])
 	
 
 	ast, err = test.Parse(CreateStringBuffer(strings.NewReader("foofoo foo")))
@@ -57,7 +57,7 @@ func Test_TrimSequence(t *testing.T) {
 		t.Error(err)
 	}
 
-	assertNodeStringEquals(t, "(TEST foo foo foo)", ast)
+	assertNodeStringEquals(t, "(TEST foo foo foo)", ast[0])
 
 
 	ast, err = test.Parse(CreateStringBuffer(strings.NewReader(" \tfoo foo\tfoo")))
@@ -66,5 +66,5 @@ func Test_TrimSequence(t *testing.T) {
 		t.Error(err)
 	}
 
-	assertNodeStringEquals(t, "(TEST foo foo foo)", ast)
+	assertNodeStringEquals(t, "(TEST foo foo foo)", ast[0])
 }

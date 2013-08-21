@@ -10,12 +10,12 @@ func Test_LiteralParseString(t *testing.T) {
 
 	g := NewGrammar()
 
-	ast, err := g.Lit("foo").Parse(input)
+	result, err := g.Lit("foo").Parse(input)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	assertStringerEquals(t, "foo", ast.Val())
-	assertIntEquals(t, 0, len(ast.Children()))
+	assertStringerEquals(t, "foo", result[0].Val())
+	assertIntEquals(t, 0, len(result[0].Children()))
 }

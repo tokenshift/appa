@@ -17,10 +17,10 @@ func (rx regex) Match(input StringBuffer, offset int) int {
 	}
 }
 
-func (rx regex) Parse(input StringBuffer) (node Node, err error) {
+func (rx regex) Parse(input StringBuffer) (node []Node, err error) {
 	if matches := rx.Match(input, 0); matches > 0 {
 		text := input.Consume(matches)
-		node = Lit(text)
+		node = []Node{Lit(text)}
 	} else {
 		node = nil
 		err = fmt.Errorf("Input string did not match pattern {0}", rx.pattern)

@@ -20,6 +20,9 @@ type StringBuffer interface {
 	// Whether the end of the input has been reached.
 	Eof() bool
 
+	// Whether the end of the input is at the specified offset.
+	EofAt(offset int) bool
+
 	// Attempts to match a string literal.
 	ReadLiteral(text string, offset int) (ok bool)
 
@@ -70,6 +73,11 @@ func (b *stringBuffer) Discard(n int) int {
 
 func (b *stringBuffer) Eof() bool {
 	return b.isEof && len(b.buffer) == 0
+}
+
+func (b *stringBuffer) EofAt(offset int) bool {
+	b.prepare(offset + 1)
+	return b.isEof && offset >= len(b.buffer)
 }
 
 func (b *stringBuffer) ReadLiteral(text string, offset int) (bool) {

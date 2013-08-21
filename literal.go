@@ -14,12 +14,11 @@ func (lit Lit) Match(input StringBuffer, offset int) int {
 	}
 }
 
-func (lit Lit) Parse(input StringBuffer) (ast Node, err error) {
+func (lit Lit) Parse(input StringBuffer) (result []Node, err error) {
 	if matched := lit.Match(input, 0); matched > 0 {
 		input.Discard(matched)
-		ast = lit
+		result = []Node{lit}
 	} else {
-		ast = nil
 		err = fmt.Errorf("Expected literal '%v'.", lit)
 	}
 

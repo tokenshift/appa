@@ -16,12 +16,12 @@ func (o optional) Match(buffer StringBuffer, offset int) int {
 	return 0
 }
 
-func (o optional) Parse(buffer StringBuffer) (node Node, err error) {
+func (o optional) Parse(buffer StringBuffer) (node []Node, err error) {
 	matched := o.rule.Match(buffer, 0)
 	if matched > 0 {
 		node, err = o.rule.Parse(buffer)
 	} else {
-		node = nil
+		node = []Node{}
 	}
 
 	return

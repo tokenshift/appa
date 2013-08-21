@@ -25,13 +25,13 @@ func (t trim) Match(buffer StringBuffer, offset int) int {
 	return -1
 }
 
-func (t trim) Parse(buffer StringBuffer) (ast Node, err error) {
+func (t trim) Parse(buffer StringBuffer) (result []Node, err error) {
 	ok, match := buffer.ReadPattern(rx_trim, 0)
 	if ok {
 		buffer.Discard(len(match))
 	}
 
-	ast, err = t.rule.Parse(buffer)
+	result, err = t.rule.Parse(buffer)
 	return
 }
 

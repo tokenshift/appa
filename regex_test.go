@@ -18,8 +18,8 @@ func Test_RegexParseString(t *testing.T) {
 		return
 	}
 
-	assertStringerEquals(t, "12345", ast.Val())
-	assertIntEquals(t, 0, len(ast.Children()))
+	assertStringerEquals(t, "12345", ast[0].Val())
+	assertIntEquals(t, 0, len(ast[0].Children()))
 
 	input = CreateStringBuffer(strings.NewReader("foofoofoo"))
 

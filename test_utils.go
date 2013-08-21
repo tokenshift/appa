@@ -3,6 +3,15 @@ package appa
 import "fmt"
 import "testing"
 
+func assertFloatEquals(t *testing.T, expected float64, actual float64) bool {
+	if actual != expected {
+		t.Errorf("Expected %f, got %f.", expected, actual)
+		return false
+	}
+	
+	return true
+}
+
 func assertIntEquals(t *testing.T, expected int, actual int) bool {
 	if actual != expected {
 		t.Errorf("Expected %d, got %d.", expected, actual)

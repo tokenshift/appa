@@ -37,9 +37,9 @@ func Test_ReadNonTerminal(t *testing.T) {
 		t.Error(err)
 	}
 
-	assertIntEquals(t, 1, len(lit1.Children()))
-	assertIntEquals(t, 1, len(lit2.Children()))
+	assertIntEquals(t, 1, len(lit1[0].Children()))
+	assertIntEquals(t, 1, len(lit2[0].Children()))
 
-	assertNodeStringEquals(t, "(FOO foo)", lit1)
-	assertNodeStringEquals(t, "(FOO bar)", lit2)
+	assertNodeStringEquals(t, "(FOO foo)", lit1[0])
+	assertNodeStringEquals(t, "(FOO bar)", lit2[0])
 }

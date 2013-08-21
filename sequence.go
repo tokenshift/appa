@@ -22,24 +22,29 @@ func (s Sequence) Match(input StringBuffer, offset int) int {
 	return offset - origOffset
 }
 
-func (s Sequence) Parse(input StringBuffer) (node Node, err error) {
+func (s Sequence) Parse(input StringBuffer) (result []Node, err error) {
 	if s.Match(input, 0) <= 0 {
-		node = nil
 		err = fmt.Errorf("Failed to match sequence: %s", s)
 		return
 	}
 
 	nodes := make([]Node, len(s), len(s))
 	for i, rule := range(s) {
-		node, err = rule.Parse(input)
+		result, err = rule.Parse(input)
 		if err != nil {
 			return
 		}
 
-		nodes[i] = node
+		if result == nil || len(result) == 0 {
+			nodes[i] = nil
+		} else if len(result) == 1 {
+			nodes[i] = result[0]
+		} else {
+			nodes[i] = NodeList(result)
+		}
 	}
 
-	node = NodeList(nodes)
+	result = nodes
 	return
 }
 

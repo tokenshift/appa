@@ -2,7 +2,7 @@ package appa
 
 type grammar struct {
 	nonterminals map[string]NonTerminal
-	rules map[string][]Rule
+	rules map[string][]rulePackage
 }
 
 func (g *grammar) Lit(text string) Rule {
@@ -17,7 +17,7 @@ func (g *grammar) NonTerminal(name string) (nt NonTerminal) {
 			name,
 		}
 		g.nonterminals[name] = nt
-		g.rules[name] = make([]Rule, 0, 0)
+		g.rules[name] = make([]rulePackage, 0, 0)
 	}
 	return
 }

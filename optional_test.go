@@ -24,7 +24,7 @@ func Test_OptionalLit(t *testing.T) {
 		t.Error(err)
 	}
 
-	assertNodeStringEquals(t, "(NT 111 222 () 444 555)", ast)
+	assertNodeStringEquals(t, "(NT 111 222 () 444 555)", ast[0])
 
 
 	input = CreateStringBuffer(strings.NewReader("111222333444555"))
@@ -34,5 +34,5 @@ func Test_OptionalLit(t *testing.T) {
 		t.Error(err)
 	}
 
-	assertNodeStringEquals(t, "(NT 111 222 333 444 555)", ast)
+	assertNodeStringEquals(t, "(NT 111 222 333 444 555)", ast[0])
 }

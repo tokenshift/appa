@@ -18,13 +18,13 @@ func Test_SimpleProgram(t *testing.T) {
 	exp.AddRule(Seq(num, oper, exp))
 	exp.AddRule(num)
 
-	ast, err := exp.Parse(source)
+	result, err := exp.Parse(source)
 	if err != nil {
 		t.Error(err)
 		return
 	}
 
-	assertStringerEquals(t, "EXP", ast.Val())
-	assertIntEquals(t, 3, len(ast.Children()))
-	assertNodeStringEquals(t, "(EXP 1 + (EXP 2 + (EXP 3)))", ast)
+	assertStringerEquals(t, "EXP", result[0].Val())
+	assertIntEquals(t, 3, len(result[0].Children()))
+	assertNodeStringEquals(t, "(EXP 1 + (EXP 2 + (EXP 3)))", result[0])
 }

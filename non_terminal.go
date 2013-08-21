@@ -7,12 +7,32 @@ type nonTerminal struct {
 	name string
 }
 
+// Combines a parse rule with a set of reductions.
+type rulePackage struct {
+	rule Rule
+	reduction Reduce
+}
+
+func (nt nonTerminal) AddReduction(r Rule, reduction Reduce) {
+	if reduction == nil {
+		reduction = defaultReduction(nt)
+	}
+
+	rp := rulePackage {
+		r,
+		reduction,
+	}
+
+	nt.g.rules[nt.name] = append(nt.g.rules[nt.name], rp)
+}
+
 func (nt nonTerminal) AddRule(r Rule) {
-	nt.g.rules[nt.name] = append(nt.g.rules[nt.name], r)
+	nt.AddReduction(r, nil)
 }
 
 func (nt nonTerminal) Match(input StringBuffer, offset int) int {
-	for _, rule := range nt.g.rules[nt.name] {
+	for _, rp := range nt.g.rules[nt.name] {
+		rule := rp.rule
 		if matched := rule.Match(input, offset); matched > 0 {
 			return matched
 		}
@@ -25,21 +45,14 @@ func (nt nonTerminal) Name() string {
 	return nt.name
 }
 
-func (nt nonTerminal) Parse(input StringBuffer) (ast Node, err error) {
-	for _, rule := range nt.g.rules[nt.name] {
-		var result Node
+func (nt nonTerminal) Parse(input StringBuffer) (result []Node, err error) {
+	for _, rp := range nt.g.rules[nt.name] {
+		rule := rp.rule
+
 		result, err = rule.Parse(input)
 
 		if err == nil {
-			// TODO: generalize this branch into a reduction rule
-			// associated with the node.
-			if seq, ok := result.(NodeList); ok {
-				// Flatten the sequence into the non-terminal.
-				ast = NamedNode(nt.name, seq.Children()...)
-			} else {
-				// Use the node as is.
-				ast = NamedNode(nt.name, result)
-			}
+			result = []Node{reduce(nt, rp, result)}
 			return
 		}
 	}
@@ -49,5 +62,17 @@ func (nt nonTerminal) Parse(input StringBuffer) (ast Node, err error) {
 }
 
 func (nt nonTerminal) String() string {
-	return fmt.Sprintf("<%s>", nt.Name)
+	return fmt.Sprintf("<%s>", nt.name)
+}
+
+// Returns the matched nodes as children of a named node.
+func defaultReduction(nt nonTerminal) Reduce {
+	return func(matched []Node) Node {
+		return NodeNamed(nt.name, matched...)
+	}
+}
+
+// Reduces the parsed content using the associated reduction rule.
+func reduce(nt nonTerminal, rp rulePackage, matched []Node) Node {
+	return rp.reduction(matched)
 }

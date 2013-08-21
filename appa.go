@@ -20,7 +20,7 @@ func NewGrammar() Grammar {
 	g := new(grammar)
 
 	g.nonterminals = make(map[string]NonTerminal)
-	g.rules = make(map[string][]Rule)
+	g.rules = make(map[string][]rulePackage)
 
 	return g
 }
@@ -41,6 +41,14 @@ type NonTerminal interface {
 	// Adds a parsing rule to the non-terminal.
 	// Each of the rules is tested in the order they were added;
 	// the first successful match will be used.
+	//
+	// r: The rule to add.
+	// reduction: A transformation to be applied when the rule is matched.
+	AddReduction(r Rule, reductions Reduce)
+
+	// Adds a parsing rule to the non-terminal.
+	// Each of the rules is tested in the order they were added;
+	// the first successful match will be used.
 	AddRule(r Rule)
 
 	// The name of the non-terminal.
@@ -52,6 +60,15 @@ type NonTerminal interface {
 	Rule
 }
 
+// A reduction rule that will be applied to the result
+// of a successful parse rule evaluation.
+//
+// matched: The parsed content.
+//
+// result: The transformed value of this rule.
+// ok: Whether the transformation was successful.
+type Reduce func(matched []Node) (result Node)
+
 // A parsing rule that will be used to
 // match input text.
 type Rule interface {
@@ -62,5 +79,5 @@ type Rule interface {
 	Match(input StringBuffer, offset int) int
 
 	// Parses and consumes the matched portion of the input.
-	Parse(input StringBuffer) (Node, error)
+	Parse(input StringBuffer) ([]Node, error)
 }
