@@ -1,5 +1,7 @@
 package appa
 
+import "fmt"
+
 type NonTerminal interface {
 	Token
 
@@ -12,4 +14,8 @@ type nonTerminal struct {
 
 func (nt *nonTerminal) Match(tokens ...Token) Rule {
 	return nil
+}
+
+func (nt *nonTerminal) String() string {
+	return fmt.Sprintf("<%s>", nt.name)
 }
