@@ -7,4 +7,9 @@ type NonTerminal interface {
 }
 
 type nonTerminal struct {
+	name string
+}
+
+func (nt *nonTerminal) Match(tokens ...Token) Rule {
+	return nil
 }

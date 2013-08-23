@@ -4,7 +4,7 @@ import "fmt"
 import "testing"
 
 func Test_SimpleExpressionGrammar(t *testing.T) {
-	var g Grammar
+	g := NewGrammar()
 
 	expr := g.NonTerm("E")
 	term := g.NonTerm("T")
