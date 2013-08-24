@@ -9,6 +9,14 @@ type lrItem struct {
 	pos int
 }
 
+func (item lrItem) next() Token {
+	if item.pos >= item.prod.length() {
+		return nil;
+	}
+
+	return item.prod.body[item.pos]
+}
+
 func (item lrItem) String() string {
 	var buffer bytes.Buffer
 
@@ -29,4 +37,22 @@ func (item lrItem) String() string {
 	}
 
 	return buffer.String()
+}
+
+// A collection of LR items.
+type itemSet struct {
+	items map[lrItem]bool
+}
+
+func (set itemSet) add(item lrItem) {
+	set.items[item] = true
+}
+
+
+func (set itemSet) closure() itemSet {
+	return set
+}
+
+func (set itemSet) remove(item lrItem) {
+	delete(set.items, item)
 }

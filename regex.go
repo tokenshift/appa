@@ -1,5 +1,6 @@
 package appa
 
+import "fmt"
 import "regexp"
 
 type regex struct {
@@ -7,5 +8,5 @@ type regex struct {
 }
 
 func (r *regex) String() string {
-	return r.pattern.String()
+	return fmt.Sprintf("/%v/", r.pattern)
 }
