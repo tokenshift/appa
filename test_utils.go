@@ -2,6 +2,14 @@ package appa
 
 import "testing"
 
+func assertEquals(t *testing.T, expected interface{}, actual interface{}) bool {
+	if actual != expected {
+		t.Errorf("Expected %v, got %v.", expected, actual)
+		return false
+	}
+	return true
+}
+
 func assertFloatEquals(t *testing.T, expected float64, actual float64) bool {
 	if actual != expected {
 		t.Errorf("Expected %f, got %f.", expected, actual)
