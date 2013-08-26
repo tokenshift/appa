@@ -34,7 +34,8 @@ func NewGrammar() Grammar {
 // non-terminal as the start symbol.
 func (g *grammar) Compile(start NonTerminal) (p Parser, err error) {
 	lexer := createLexer(g)
-	states := createLALRCollection(g)
+	collection := createLALRCollection(g)
+	states := collection.createTable();
 	p = parser { lexer, states }
 
 	return nil, fmt.Errorf("Grammar.Compile not implemented.")

@@ -8,7 +8,7 @@ type Parser interface {
 
 type parser struct {
 	lexer lexer
-	collection lalrCollection
+	states actionTable
 }
 
 func (p parser) ParseString(input string) (result Node, err error) {

@@ -34,7 +34,7 @@ func (l lit) match(in *stringBuffer) (match string, ok bool) {
 }
 
 func (l lit) String() string {
-	return string(l)
+	return fmt.Sprintf("\"%s\"", l)
 }
 
 type regex struct {
