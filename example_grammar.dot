@@ -1,0 +1,135 @@
+digraph grammar {
+	node[shape=box]
+	0 [penwidth=2
+	label=<<b>
+	S → · E</b><br align="left" /><i>
+	E → · E OP<sub>1</sub> T<br align="left" />
+	E → · T<br align="left" />
+	T → · T OP<sub>2</sub> V<br align="left" />
+	T → · V<br align="left" />
+	V → · ( E )<br align="left" />
+	V → · n<br align="left" />
+	</i>>];
+
+	0 -> 1 [label="E"];
+	0 -> 2 [label="T"];
+	0 -> 3 [label="V"];
+	0 -> 4 [label="("];
+	0 -> 5 [label="n"];
+
+	1 [label=<<b>
+	S → E ·<br align="left" />
+	E → E · OP<sub>1</sub> T</b><br align="left" /><i>
+	OP<sub>1</sub> → · +<br align="left" />
+	OP<sub>1</sub> → · -<br align="left" />
+	</i>>];
+
+	1 -> 6 [label=<OP<sub>1</sub>>];
+	1 -> 7 [label="+"];
+	1 -> 8 [label="-"];
+
+	2 [label=<<b>
+	E → T ·<br align="left" />
+	T → T · OP<sub>2</sub> V</b><br align="left" /><i>
+	OP<sub>2</sub> → · *<br align="left" />
+	OP<sub>2</sub> → · /<br align="left" />
+	</i>>];
+
+	2 -> 9 [label=<OP<sub>2</sub>>];
+	2 -> 10 [label="*"];
+	2 -> 11 [label="/"];
+
+	3 [label=<<b>
+	T → V ·<br align="left" />
+	</b>>];
+
+	4 [label=<<b>
+	V → ( · E )</b><br align="left" /><i>
+	E → · E OP<sub>1</sub> T<br align="left" />
+	E → · T<br align="left" />
+	T → · T OP<sub>2</sub> V<br align="left" />
+	T → · V<br align="left" />
+	V → · ( E )<br align="left" />
+	V → · n<br align="left" />
+	</i>>];
+
+	4 -> 12 [label="E"];
+	4 -> 2 [label="T"];
+	4 -> 3 [label="V"];
+	4 -> 4 [label="("];
+	4 -> 5 [label="n"];
+
+	5 [label=<<b>
+	V → n ·<br align="left" />
+	</b>>];
+
+	6 [label=<<b>
+	E → E OP<sub>1</sub> · T</b><br align="left" /><i>
+	T → · T OP<sub>2</sub> V<br align="left" />
+	T → · V<br align="left" />
+	V → · ( E )<br align="left" />
+	V → · n<br align="left" />
+	</i>>];
+
+	6 -> 13 [label="T"];
+	6 -> 3 [label="V"];
+	6 -> 4 [label="("];
+	6 -> 5 [label="n"];
+
+	7 [label=<<b>
+	OP<sub>1</sub> → + ·<br align="left" />
+	</b>>];
+
+	8 [label=<<b>
+	OP<sub>1</sub> → - ·<br align="left" />
+	</b>>];
+
+	9 [label=<<b>
+	T → T OP<sub>2</sub> · V</b><br align="left" /><i>
+	V → · ( E )<br align="left" />
+	V → · n<br align="left" />
+	</i>>];
+
+	9 -> 14 [label="V"];
+	9 -> 4 [label="("];
+	9 -> 5 [label="n"];
+
+	10 [label=<<b>
+	OP<sub>2</sub> → * ·<br align="left" />
+	</b>>];
+
+	11 [label=<<b>
+	OP<sub>2</sub> → / ·<br align="left" />
+	</b>>];
+
+	12 [label=<<b>
+	V → ( E · )<br align="left" />
+	E → E · OP<sub>1</sub> T</b><br align="left" /><i>
+	OP<sub>1</sub> → · +<br align="left" />
+	OP<sub>1</sub> → · -<br align="left" />
+	</i>>];
+
+	12 -> 15 [label=")"];
+	12 -> 6 [label=<OP<sub>1</sub>>];
+	12 -> 7 [label="+"];
+	12 -> 8 [label="-"];
+
+	13 [label=<<b>
+	E → E OP<sub>1</sub> T ·<br align="left" />
+	T → T · OP<sub>2</sub> V</b><br align="left" /><i>
+	OP<sub>2</sub> → · *<br align="left" />
+	OP<sub>2</sub> → · /<br align="left" />
+	</i>>];
+
+	13 -> 9 [label=<OP<sub>2</sub>>];
+	13 -> 10 [label="*"];
+	13 -> 11 [label="/"];
+	
+	14 [label=<<b>
+	T → T OP<sub>2</sub> V ·<br align="left" />
+	</b>>];
+
+	15 [label=<<b>
+	V → ( E ) ·<br align="left" />
+	</b>>];
+}
