@@ -10,7 +10,7 @@ type lalrItem struct {
 	// The head of the production.
 	nt *nonTerminal
 	// The body of the production.
-	body []Token
+	body rule
 	// The position of the parse in the production.
 	pos int
 
@@ -18,7 +18,7 @@ type lalrItem struct {
 	lookahead Terminal
 }
 
-func createLALRItem(nt *nonTerminal, body []Token, pos int) lalrItem {
+func createLALRItem(nt *nonTerminal, body rule, pos int) lalrItem {
 	return lalrItem {
 		nt,
 		body,
@@ -41,17 +41,14 @@ func (item lalrItem) equals(other lalrItem) bool {
 		return false
 	}
 
-	if len(item.body) != len(other.body) {
+
+	if !item.body.equals(other.body) {
 		return false
 	}
 
-	for i, tkn := range(item.body) {
-		if tkn != other.body[i] {
-			return false;
-		}
+	if item.lookahead != other.lookahead {
+		return false
 	}
-
-	// Lookaheads are ignored in equality comparison.
 
 	return true
 }
@@ -61,11 +58,12 @@ func (item lalrItem) hash() uint32 {
 	hash := fnv.New32()
 
 	io.WriteString(hash, item.nt.String())
-	for _, tkn := range(item.body) {
-		io.WriteString(hash, fmt.Sprint(tkn))
-	}
-
+	io.WriteString(hash, fmt.Sprint(item.body.hash()))
 	io.WriteString(hash, fmt.Sprint(item.pos))
+
+	if item.lookahead != nil {
+		io.WriteString(hash, fmt.Sprint(item.lookahead))
+	}
 
 	return hash.Sum32()
 }
@@ -73,7 +71,7 @@ func (item lalrItem) hash() uint32 {
 // Creates a new item by incrementing the position
 // of this one.
 func (item lalrItem) inc() (out lalrItem, ok bool) {
-	if item.pos >= len(item.body) {
+	if item.pos >= item.body.size() {
 		ok = false
 		return
 	}
@@ -88,11 +86,11 @@ func (item lalrItem) inc() (out lalrItem, ok bool) {
 
 // Gets the token immediately following the parse position.
 func (item lalrItem) next() Token {
-	if item.pos >= len(item.body) {
+	if item.pos >= item.body.size() {
 		return nil
 	}
 
-	return item.body[item.pos]
+	return item.body.at(item.pos)
 }
 
 func (item lalrItem) String() string {
@@ -101,7 +99,7 @@ func (item lalrItem) String() string {
 	fmt.Fprint(out, item.nt.String())
 	fmt.Fprint(out, " →")
 
-	for i, tkn := range (item.body) {
+	for i, tkn := range (item.body.body) {
 		if i == item.pos {
 			fmt.Fprint(out, " ·")
 		}
@@ -109,7 +107,7 @@ func (item lalrItem) String() string {
 		fmt.Fprintf(out, " %v", tkn)
 	}
 
-	if item.pos == len(item.body) {
+	if item.pos == item.body.size() {
 		fmt.Fprint(out, " ·")
 	}
 

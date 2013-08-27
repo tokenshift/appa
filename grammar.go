@@ -68,7 +68,7 @@ func (g *grammar) NonTerm(name string) NonTerminal {
 	if nt, ok = g.nonterminals[name]; !ok {
 		nt = nonTerminal {
 			name,
-			make([][]Token, 0),
+			make([]rule, 0),
 			"",
 		}
 		g.nonterminals[name] = nt

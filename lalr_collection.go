@@ -15,7 +15,7 @@ type lalrCollection struct {
 func createLALRCollection(start *nonTerminal) (coll lalrCollection) {
 	coll.sets = make(map[uint32][]*lalrSet)
 
-	wrapper := nonTerminal {"", [][]Token{[]Token{start}}, "{START}"}
+	wrapper := nonTerminal {"", []rule{createRule(start)}, "{START}"}
 	startItem := createLALRItem(&wrapper, wrapper.rules[0], 0)
 
 	coll.createLALRSets(startItem)

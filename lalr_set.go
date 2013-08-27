@@ -152,22 +152,26 @@ func (set *lalrSet) hash() (val uint32) {
 // Gets a list of 'next' tokens for all of the
 // items in this set.
 func (set *lalrSet) nextTokens() []Token {
-	tokens := make(map[Token]bool)
+	tokens := make([]Token, 0)
 
 	for _, items := range(set.items) {
 		for _, item := range(items) {
 			if next := item.next(); next != nil {
-				tokens[next] = true
+				exists := false
+				for _, tkn := range(tokens) {
+					if next.Equals(tkn) {
+						exists = true
+						break
+					}
+				}
+				if !exists {
+					tokens = append(tokens, next)
+				}
 			}
 		}
 	}
 
-	tokenList := make([]Token, 0, len(tokens))
-	for tkn, _ := range(tokens) {
-		tokenList = append(tokenList, tkn)
-	}
-
-	return tokenList
+	return tokens
 }
 
 // The number of items in the set.

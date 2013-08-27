@@ -18,6 +18,11 @@ func (_eof) match(in *stringBuffer) (match string, ok bool) {
 	return
 }
 
+func (_eof) Equals(other Token) bool {
+	_, ok := other.(_eof)
+	return ok
+}
+
 func (_eof) String() string {
 	return "$"
 }
@@ -33,12 +38,28 @@ func (l lit) match(in *stringBuffer) (match string, ok bool) {
 	return
 }
 
+func (l lit) Equals(other Token) bool {
+	if l2, ok := other.(lit); ok {
+		return string(l2) == string(l)
+	} else {
+		return false
+	}
+}
+
 func (l lit) String() string {
 	return fmt.Sprintf("\"%s\"", string(l))
 }
 
 type regex struct {
 	pattern *regexp.Regexp
+}
+
+func (r regex) Equals(other Token) bool {
+	if r2, ok := other.(regex); ok {
+		return r2.pattern == r.pattern
+	} else {
+		return false
+	}
 }
 
 func (r regex) match(in *stringBuffer) (match string, ok bool) {
