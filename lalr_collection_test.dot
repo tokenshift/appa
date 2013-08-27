@@ -1,14 +1,144 @@
 digraph LALR_Collection {
 	node[shape=box];
 
-	1 [penwidth=2
-	label=<<b>
-	{START} → · &amp;lt;E&amp;gt;<br align="left" />
+	1 [label=<<b>
+	&amp;lt;T&amp;gt; → &amp;lt;V&amp;gt; ·<br align="left" />
 	</b>>];
 
-	1 -> 2 [label="<E>"];
-
 	2 [label=<<b>
+	&amp;lt;V&amp;gt; → "(" · &amp;lt;E&amp;gt; ")"<br align="left" />
+	</b><i>
+	&amp;lt;E&amp;gt; → · &amp;lt;E&amp;gt; &amp;lt;OP1&amp;gt; &amp;lt;T&amp;gt;<br align="left" />
+	&amp;lt;E&amp;gt; → · &amp;lt;T&amp;gt;<br align="left" />
+	&amp;lt;T&amp;gt; → · &amp;lt;T&amp;gt; &amp;lt;OP2&amp;gt; &amp;lt;V&amp;gt;<br align="left" />
+	&amp;lt;T&amp;gt; → · &amp;lt;V&amp;gt;<br align="left" />
+	&amp;lt;V&amp;gt; → · "(" &amp;lt;E&amp;gt; ")"<br align="left" />
+	&amp;lt;V&amp;gt; → · /\d+/<br align="left" />
+	</i>>];
+
+	2 -> 3 [label="<E>"];
+	2 -> 4 [label="<T>"];
+	2 -> 1 [label="<V>"];
+	2 -> 2 [label="\"(\""];
+	2 -> 5 [label="/\d+/"];
+
+	5 [label=<<b>
+	&amp;lt;V&amp;gt; → /\d+/ ·<br align="left" />
+	</b>>];
+
+	6 [label=<<b>
+	&amp;lt;OP1&amp;gt; → "+" ·<br align="left" />
+	</b>>];
+
+	7 [label=<<b>
+	&amp;lt;T&amp;gt; → &amp;lt;T&amp;gt; &amp;lt;OP2&amp;gt; &amp;lt;V&amp;gt; ·<br align="left" />
+	</b>>];
+
+	8 [label=<<b>
+	&amp;lt;V&amp;gt; → "(" &amp;lt;E&amp;gt; ")" ·<br align="left" />
+	</b>>];
+
+	4 [label=<<b>
+	&amp;lt;E&amp;gt; → &amp;lt;T&amp;gt; ·<br align="left" />
+	&amp;lt;T&amp;gt; → &amp;lt;T&amp;gt; · &amp;lt;OP2&amp;gt; &amp;lt;V&amp;gt;<br align="left" />
+	</b><i>
+	&amp;lt;OP2&amp;gt; → · "*"<br align="left" />
+	&amp;lt;OP2&amp;gt; → · "/"<br align="left" />
+	</i>>];
+
+	4 -> 9 [label="<OP2>"];
+	4 -> 10 [label="\"*\""];
+	4 -> 11 [label="\"/\""];
+
+	12 [label=<<b>
+	&amp;lt;E&amp;gt; → &amp;lt;E&amp;gt; &amp;lt;OP1&amp;gt; · &amp;lt;T&amp;gt;<br align="left" />
+	</b><i>
+	&amp;lt;T&amp;gt; → · &amp;lt;T&amp;gt; &amp;lt;OP2&amp;gt; &amp;lt;V&amp;gt;<br align="left" />
+	&amp;lt;T&amp;gt; → · &amp;lt;V&amp;gt;<br align="left" />
+	&amp;lt;V&amp;gt; → · "(" &amp;lt;E&amp;gt; ")"<br align="left" />
+	&amp;lt;V&amp;gt; → · /\d+/<br align="left" />
+	</i>>];
+
+	12 -> 13 [label="<T>"];
+	12 -> 1 [label="<V>"];
+	12 -> 2 [label="\"(\""];
+	12 -> 5 [label="/\d+/"];
+
+	14 [label=<<b>
+	&amp;lt;OP1&amp;gt; → "-" ·<br align="left" />
+	</b>>];
+
+	9 [label=<<b>
+	&amp;lt;T&amp;gt; → &amp;lt;T&amp;gt; &amp;lt;OP2&amp;gt; · &amp;lt;V&amp;gt;<br align="left" />
+	</b><i>
+	&amp;lt;V&amp;gt; → · "(" &amp;lt;E&amp;gt; ")"<br align="left" />
+	&amp;lt;V&amp;gt; → · /\d+/<br align="left" />
+	</i>>];
+
+	9 -> 7 [label="<V>"];
+	9 -> 2 [label="\"(\""];
+	9 -> 5 [label="/\d+/"];
+
+	13 [label=<<b>
+	&amp;lt;E&amp;gt; → &amp;lt;E&amp;gt; &amp;lt;OP1&amp;gt; &amp;lt;T&amp;gt; ·<br align="left" />
+	&amp;lt;T&amp;gt; → &amp;lt;T&amp;gt; · &amp;lt;OP2&amp;gt; &amp;lt;V&amp;gt;<br align="left" />
+	</b><i>
+	&amp;lt;OP2&amp;gt; → · "*"<br align="left" />
+	&amp;lt;OP2&amp;gt; → · "/"<br align="left" />
+	</i>>];
+
+	13 -> 9 [label="<OP2>"];
+	13 -> 10 [label="\"*\""];
+	13 -> 11 [label="\"/\""];
+
+	15 [penwidth=2
+	label=<<b>
+	{START} → · &amp;lt;E&amp;gt;<br align="left" />
+	</b><i>
+	&amp;lt;E&amp;gt; → · &amp;lt;E&amp;gt; &amp;lt;OP1&amp;gt; &amp;lt;T&amp;gt;<br align="left" />
+	&amp;lt;E&amp;gt; → · &amp;lt;T&amp;gt;<br align="left" />
+	&amp;lt;T&amp;gt; → · &amp;lt;T&amp;gt; &amp;lt;OP2&amp;gt; &amp;lt;V&amp;gt;<br align="left" />
+	&amp;lt;T&amp;gt; → · &amp;lt;V&amp;gt;<br align="left" />
+	&amp;lt;V&amp;gt; → · "(" &amp;lt;E&amp;gt; ")"<br align="left" />
+	&amp;lt;V&amp;gt; → · /\d+/<br align="left" />
+	</i>>];
+
+	15 -> 16 [label="<E>"];
+	15 -> 4 [label="<T>"];
+	15 -> 1 [label="<V>"];
+	15 -> 2 [label="\"(\""];
+	15 -> 5 [label="/\d+/"];
+
+	16 [label=<<b>
 	{START} → &amp;lt;E&amp;gt; ·<br align="left" />
+	&amp;lt;E&amp;gt; → &amp;lt;E&amp;gt; · &amp;lt;OP1&amp;gt; &amp;lt;T&amp;gt;<br align="left" />
+	</b><i>
+	&amp;lt;OP1&amp;gt; → · "+"<br align="left" />
+	&amp;lt;OP1&amp;gt; → · "-"<br align="left" />
+	</i>>];
+
+	16 -> 12 [label="<OP1>"];
+	16 -> 6 [label="\"+\""];
+	16 -> 14 [label="\"-\""];
+
+	10 [label=<<b>
+	&amp;lt;OP2&amp;gt; → "*" ·<br align="left" />
+	</b>>];
+
+	3 [label=<<b>
+	&amp;lt;V&amp;gt; → "(" &amp;lt;E&amp;gt; · ")"<br align="left" />
+	&amp;lt;E&amp;gt; → &amp;lt;E&amp;gt; · &amp;lt;OP1&amp;gt; &amp;lt;T&amp;gt;<br align="left" />
+	</b><i>
+	&amp;lt;OP1&amp;gt; → · "+"<br align="left" />
+	&amp;lt;OP1&amp;gt; → · "-"<br align="left" />
+	</i>>];
+
+	3 -> 8 [label="\")\""];
+	3 -> 12 [label="<OP1>"];
+	3 -> 6 [label="\"+\""];
+	3 -> 14 [label="\"-\""];
+
+	11 [label=<<b>
+	&amp;lt;OP2&amp;gt; → "/" ·<br align="left" />
 	</b>>];
 }

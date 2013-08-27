@@ -98,7 +98,8 @@ func (item lalrItem) next() Token {
 func (item lalrItem) String() string {
 	out := new(bytes.Buffer)
 
-	fmt.Fprintf(out, "%v →", item.nt)
+	fmt.Fprint(out, item.nt.String())
+	fmt.Fprint(out, " →")
 
 	for i, tkn := range (item.body) {
 		if i == item.pos {

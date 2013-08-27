@@ -51,9 +51,31 @@ func (set *lalrSet) addItem(item lalrItem) bool {
 func (set *lalrSet) closure() (out *lalrSet) {
 	out = createLALRSet()
 
+	// Keep a queue of items that still need
+	// to be processed.
+	newItems := make([]lalrItem, 0)
+
 	for _, items := range(set.items) {
 		for _, item := range(items) {
-			out.addItem(item)
+			if out.addItem(item) {
+				newItems = append(newItems, item)
+			}
+		}
+	}
+
+	for len(newItems) > 0 {
+		item := newItems[0]
+		newItems = newItems[1:]
+
+		if next := item.next(); next != nil {
+			if nt, ok := next.(*nonTerminal); ok {
+				for _, rule := range(nt.rules) {
+					it2 := createLALRItem(nt, rule, 0)
+					if out.addItem(it2) {
+						newItems = append(newItems, it2)
+					}
+				}
+			}
 		}
 	}
 
