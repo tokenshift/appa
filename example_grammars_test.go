@@ -3,6 +3,36 @@ package appa
 import "fmt"
 import "testing"
 
+func createExpressionGrammar() (g Grammar, start NonTerminal) {
+	g = NewGrammar()
+
+	e := g.NonTerm("E")
+	t := g.NonTerm("T")
+	v := g.NonTerm("V")
+
+	op1 := g.NonTerm("OP1")
+	op1.Match(g.Lit("+"))
+	op1.Match(g.Lit("-"))
+
+	op2 := g.NonTerm("OP2")
+	op2.Match(g.Lit("*"))
+	op2.Match(g.Lit("/"))
+
+	// E -> E + T | T
+	e.Match(e, op1, t)
+	e.Match(t)
+
+	// T -> T * V | V
+	t.Match(t, op2, v)
+	t.Match(v)
+
+	// V -> ( E ) | n
+	v.Match(g.Lit("("), e, g.Lit(")"))
+	v.Match(g.Regex("\\d+"))
+
+	return g, e
+}
+
 func Test_SimpleExpressionGrammar(t *testing.T) {
 	g := NewGrammar()
 

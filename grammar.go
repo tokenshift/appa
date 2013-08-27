@@ -1,6 +1,7 @@
 package appa
 
 import "fmt"
+import "io"
 import "regexp"
 
 type Grammar interface {
@@ -10,6 +11,8 @@ type Grammar interface {
 	Regex(pattern string) Terminal
 
 	NonTerm(name string) NonTerminal
+
+	WriteLALRCollection(start NonTerminal, out io.Writer)
 }
 
 type grammar struct {
@@ -33,8 +36,13 @@ func NewGrammar() Grammar {
 // Compiles the grammar into a parser, with the specified
 // non-terminal as the start symbol.
 func (g *grammar) Compile(start NonTerminal) (p Parser, err error) {
+	s, ok := start.(*nonTerminal)
+	if !ok {
+		panic(fmt.Sprintf("%v is not a non-terminal in this grammar.", start))
+	}
+
 	lexer := createLexer(g)
-	collection := createLALRCollection(g)
+	collection := createLALRCollection(s)
 	states := collection.createTable();
 	p = parser { lexer, states }
 
@@ -61,6 +69,7 @@ func (g *grammar) NonTerm(name string) NonTerminal {
 		nt = nonTerminal {
 			name,
 			make([][]Token, 0),
+			"",
 		}
 		g.nonterminals[name] = nt
 	}
@@ -80,4 +89,17 @@ func (g *grammar) Regex(pattern string) Terminal {
 	}
 
 	return r
+}
+
+// Writes the collection of LALR sets in DOT format to
+// the specified output stream. Useful for debugging
+// parser construction.
+func (g *grammar) WriteLALRCollection(start NonTerminal, out io.Writer) {
+	s, ok := start.(*nonTerminal)
+	if !ok {
+		panic(fmt.Sprintf("%v is not a non-terminal in this grammar.", start))
+	}
+
+	collection := createLALRCollection(s)
+	collection.writeTo(out)
 }

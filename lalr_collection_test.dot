@@ -1,0 +1,14 @@
+digraph LALR_Collection {
+	node[shape=box];
+
+	1 [penwidth=2
+	label=<<b>
+	{START} → · &amp;lt;E&amp;gt;<br align="left" />
+	</b>>];
+
+	1 -> 2 [label="<E>"];
+
+	2 [label=<<b>
+	{START} → &amp;lt;E&amp;gt; ·<br align="left" />
+	</b>>];
+}

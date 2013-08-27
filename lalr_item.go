@@ -1,5 +1,6 @@
 package appa
 
+import "bytes"
 import "fmt"
 import "hash/fnv"
 import "io"
@@ -15,6 +16,15 @@ type lalrItem struct {
 
 	// Lookaheads for the item.
 	lookaheads []Terminal
+}
+
+func createLALRItem(nt *nonTerminal, body []Token, pos int) lalrItem {
+	return lalrItem {
+		nt,
+		body,
+		pos,
+		make([]Terminal, 0),
+	}
 }
 
 // Value equality for the LALR item.
@@ -58,4 +68,49 @@ func (item lalrItem) hash() uint32 {
 	io.WriteString(hash, fmt.Sprint(item.pos))
 
 	return hash.Sum32()
+}
+
+// Creates a new item by incrementing the position
+// of this one.
+func (item lalrItem) inc() (out lalrItem, ok bool) {
+	if item.pos >= len(item.body) {
+		ok = false
+		return
+	}
+
+	out.nt = item.nt
+	out.body = item.body
+	out.pos = item.pos + 1
+	ok = true
+
+	return
+}
+
+// Gets the token immediately following the parse position.
+func (item lalrItem) next() Token {
+	if item.pos >= len(item.body) {
+		return nil
+	}
+
+	return item.body[item.pos]
+}
+
+func (item lalrItem) String() string {
+	out := new(bytes.Buffer)
+
+	fmt.Fprintf(out, "%v →", item.nt)
+
+	for i, tkn := range (item.body) {
+		if i == item.pos {
+			fmt.Fprint(out, " ·")
+		}
+
+		fmt.Fprintf(out, " %v", tkn)
+	}
+
+	if item.pos == len(item.body) {
+		fmt.Fprint(out, " ·")
+	}
+
+	return out.String()
 }
