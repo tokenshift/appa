@@ -48,6 +48,7 @@ func (coll *lalrCollection) addSet(set *lalrSet) (isNew bool, out *lalrSet) {
 // Constructs the collection of LALR sets, starting with the
 // specified item.
 func (coll *lalrCollection) createLALRSets(item lalrItem) {
+	item.lookahead = eof
 	startSet := createLALRSet(item)
 
 	coll.addSet(startSet)

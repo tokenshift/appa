@@ -16,5 +16,5 @@ func Test_CreatingExampleGrammarLALRCollection(t *testing.T) {
 
 	g.WriteLALRCollection(start, out)
 
-	t.Error("")
+	// Verify output manually.
 }

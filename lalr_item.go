@@ -15,7 +15,7 @@ type lalrItem struct {
 	pos int
 
 	// Lookaheads for the item.
-	lookaheads []Terminal
+	lookahead Terminal
 }
 
 func createLALRItem(nt *nonTerminal, body []Token, pos int) lalrItem {
@@ -23,7 +23,7 @@ func createLALRItem(nt *nonTerminal, body []Token, pos int) lalrItem {
 		nt,
 		body,
 		pos,
-		make([]Terminal, 0),
+		nil,
 	}
 }
 
@@ -111,6 +111,10 @@ func (item lalrItem) String() string {
 
 	if item.pos == len(item.body) {
 		fmt.Fprint(out, " ·")
+	}
+
+	if item.lookahead != nil {
+		fmt.Fprintf(out, ", %v", item.lookahead)
 	}
 
 	return out.String()
