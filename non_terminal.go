@@ -27,6 +27,41 @@ func (nt *nonTerminal) Equals(other Token) bool {
 	}
 }
 
+func (nt *nonTerminal) first() []Terminal {
+	processed := make(map[*nonTerminal]bool)
+	terminals := make(map[Terminal]bool)
+	queue := []*nonTerminal{ nt }
+
+
+	for len(queue) > 0 {
+		nonterm := queue[0]
+		processed[nonterm] = true
+
+		queue = queue[1:]
+
+		for _, rule := range(nonterm.rules) {
+			if rule.size() > 0 {
+				first := rule.at(0)
+
+				if term, ok := first.(Terminal); ok {
+					terminals[term] = true
+				} else {
+					if _, ok := processed[first.(*nonTerminal)]; !ok {
+						queue = append(queue, first.(*nonTerminal))
+					}
+				}
+			}
+		}
+	}
+
+	result := make([]Terminal, 0, len(terminals))
+	for term, _ := range(terminals) {
+		result = append(result, term)
+	}
+
+	return result
+}
+
 func (nt *nonTerminal) Match(tokens ...Token) Rule {
 	nt.rules = append(nt.rules, createRule(tokens...))
 

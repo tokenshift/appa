@@ -70,9 +70,19 @@ func (set *lalrSet) closure() (out *lalrSet) {
 		if next := item.next(); next != nil {
 			if nt, ok := next.(*nonTerminal); ok {
 				for _, rule := range(nt.rules) {
-					it2 := createLALRItem(nt, rule, 0)
-					if out.addItem(it2) {
-						newItems = append(newItems, it2)
+					var lookaheads []Terminal
+					if item.pos < item.body.size() {
+						lookaheads = item.body.at(item.pos).first()
+					} else {
+						lookaheads = []Terminal{item.lookahead}
+					}
+
+					for _, lookahead := range(lookaheads) {
+						it2 := createLALRItem(nt, rule, 0)
+						it2.lookahead = lookahead
+						if out.addItem(it2) {
+							newItems = append(newItems, it2)
+						}
 					}
 				}
 			}
