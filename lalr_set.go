@@ -74,15 +74,12 @@ func (set *lalrSet) closure() (out *lalrSet) {
 					if item.pos < item.body.size() {
 						lookaheads = item.body.at(item.pos).first()
 					} else {
-						lookaheads = []Terminal{item.lookahead}
+						lookaheads = item.lookaheads
 					}
 
-					for _, lookahead := range(lookaheads) {
-						it2 := createLALRItem(nt, rule, 0)
-						it2.lookahead = lookahead
-						if out.addItem(it2) {
-							newItems = append(newItems, it2)
-						}
+					it2 := createLALRItem(nt, rule, 0, lookaheads...)
+					if out.addItem(it2) {
+						newItems = append(newItems, it2)
 					}
 				}
 			}

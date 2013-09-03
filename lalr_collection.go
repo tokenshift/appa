@@ -48,7 +48,7 @@ func (coll *lalrCollection) addSet(set *lalrSet) (isNew bool, out *lalrSet) {
 // Constructs the collection of LALR sets, starting with the
 // specified item.
 func (coll *lalrCollection) createLALRSets(item lalrItem) {
-	item.lookahead = eof
+	item.addLookahead(eof)
 	startSet := createLALRSet(item)
 
 	coll.addSet(startSet)
@@ -108,13 +108,12 @@ func (coll *lalrCollection) propagateLookaheads() {
 		// For each item A → α·β in K
 		set.each(func (item lalrItem) {
 			// Let J be CLOSURE({[A → α·β, #]})
-			i2 := createLALRItem(item.nt, item.body, item.pos)
-			i2.lookahead = bogy
+			i2 := createLALRItem(item.nt, item.body, item.pos, bogy)
 
 			j := createLALRSet(i2).closure()
 
 			j.each(func (cItem lalrItem) {
-				if bogy.Equals(cItem.lookahead) {
+				if cItem.hasLookahead(bogy) {
 					// If [B → γ·Xδ, #] is in J, conclude that
 					// lookaheads propagate from A → α·β in K
 					// to B → γX·δ in GOTO(K, X).

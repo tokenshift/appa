@@ -15,15 +15,26 @@ type lalrItem struct {
 	pos int
 
 	// Lookaheads for the item.
-	lookahead Terminal
+	lookaheads []Terminal
 }
 
-func createLALRItem(nt *nonTerminal, body rule, pos int) lalrItem {
+func createLALRItem(nt *nonTerminal, body rule, pos int, lookaheads ...Terminal) lalrItem {
 	return lalrItem {
 		nt,
 		body,
 		pos,
-		nil,
+		lookaheads,
+	}
+}
+
+// Adds a lookahead to this LALR item.
+// Returns true if the lookahead was not already present.
+func (item lalrItem) addLookahead(la Terminal) bool {
+	if item.hasLookahead(la) {
+		return false
+	} else {
+		item.lookaheads = append(item.lookaheads, la)
+		return true
 	}
 }
 
@@ -46,10 +57,6 @@ func (item lalrItem) equals(other lalrItem) bool {
 		return false
 	}
 
-	if item.lookahead != other.lookahead {
-		return false
-	}
-
 	return true
 }
 
@@ -61,11 +68,18 @@ func (item lalrItem) hash() uint32 {
 	io.WriteString(hash, fmt.Sprint(item.body.hash()))
 	io.WriteString(hash, fmt.Sprint(item.pos))
 
-	if item.lookahead != nil {
-		io.WriteString(hash, fmt.Sprint(item.lookahead))
+	return hash.Sum32()
+}
+
+// Checks whether the specified lookahead is present.
+func (item lalrItem) hasLookahead(la Terminal) bool {
+	for _, tkn := range(item.lookaheads) {
+		if tkn == la {
+			return true
+		}
 	}
 
-	return hash.Sum32()
+	return false
 }
 
 // Creates a new item by incrementing the position
@@ -79,6 +93,8 @@ func (item lalrItem) inc() (out lalrItem, ok bool) {
 	out.nt = item.nt
 	out.body = item.body
 	out.pos = item.pos + 1
+	out.lookaheads = make([]Terminal, len(item.lookaheads))
+	copy(out.lookaheads, item.lookaheads)
 	ok = true
 
 	return
@@ -111,8 +127,13 @@ func (item lalrItem) String() string {
 		fmt.Fprint(out, " ·")
 	}
 
-	if item.lookahead != nil {
-		fmt.Fprintf(out, ", %v", item.lookahead)
+
+	for i, la := range(item.lookaheads) {
+		if i == 0 {
+			fmt.Fprint(out, ",")
+		}
+
+		fmt.Fprintf(out, " %v", la)
 	}
 
 	return out.String()
