@@ -89,8 +89,43 @@ func (coll *lalrCollection) createTable() (table actionTable) {
 	return
 }
 
+// Iterates through each of the LALR sets in this collection.
+func (coll *lalrCollection) each(f func(*lalrSet)) {
+	for _, sets := range(coll.sets) {
+		for _, set := range(sets) {
+			f(set)
+		}
+	}
+}
+
 // Computes lookaheads for the LALR set kernels in this collection.
 func (coll *lalrCollection) propagateLookaheads() {
+	// Determine spontaneously generated lookaheads
+	// and propagation paths.
+
+	// For each kernel K in the collection
+	coll.each(func (set *lalrSet) {
+		// For each item A → α·β in K
+		set.each(func (item lalrItem) {
+			// Let J be CLOSURE({[A → α·β, #]})
+			i2 := createLALRItem(item.nt, item.body, item.pos)
+			i2.lookahead = bogy
+
+			j := createLALRSet(i2).closure()
+
+			j.each(func (cItem lalrItem) {
+				if bogy.Equals(cItem.lookahead) {
+					// If [B → γ·Xδ, #] is in J, conclude that
+					// lookaheads propagate from A → α·β in K
+					// to B → γX·δ in GOTO(K, X).
+				} else {
+					// If [B → γ·Xδ, a] is in J and 'a' is not #,
+					// conclude that lookahead 'a' is generated
+					// spontaneously for item B → γX·δ in GOTO(K, X).
+				}
+			})
+		})
+	})
 }
 
 // Gets the number of LALR sets in the collection.

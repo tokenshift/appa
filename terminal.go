@@ -9,6 +9,29 @@ type Terminal interface {
 	match(in *stringBuffer) (match string, ok bool)
 }
 
+// Symbol representing a terminal that will
+// never otherwise occur in a grammar.
+type _bogy int
+var bogy _bogy = -1
+
+func (_bogy) Equals(other Token) bool {
+	_, ok := other.(_bogy)
+	return ok
+}
+
+func (b _bogy) first() []Terminal {
+	return []Terminal{b}
+}
+
+func (_bogy) match(in *stringBuffer) (match string, ok bool) {
+	return "", false
+}
+
+func (_bogy) String() string {
+	return "#"
+}
+
+// Represents the end-of-file marker.
 type _eof int
 var eof _eof = 0
 
@@ -31,6 +54,7 @@ func (_eof) String() string {
 	return "$"
 }
 
+// Matches a string literal.
 type lit string
 
 func (l lit) Equals(other Token) bool {
@@ -58,6 +82,7 @@ func (l lit) String() string {
 	return fmt.Sprintf("\"%s\"", string(l))
 }
 
+// Matches a regular expression.
 type regex struct {
 	pattern *regexp.Regexp
 }

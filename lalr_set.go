@@ -125,6 +125,15 @@ func (set *lalrSet) contains(item lalrItem) bool {
 	return false
 }
 
+// Iterates through the items in this LALR set.
+func (set *lalrSet) each(f func(lalrItem)) {
+	for _, items := range(set.items) {
+		for _, item := range(items) {
+			f(item)
+		}
+	}
+}
+
 // Value equality for LALR sets.
 func (set *lalrSet) equals(other *lalrSet) bool {
 	if set == other {
