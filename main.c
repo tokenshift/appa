@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-#include "appa.h"
-#include "string.h"
+#include "src/appa.h"
+#include "src/string.h"
 
 int main(int argc, char **argv) {
 	Grammar *g = appa_create_grammar();

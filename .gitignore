@@ -1,3 +1,7 @@
 *.swp
 *.out
 *.gch
+*.dSYM
+*.o
+*.a
+appa
