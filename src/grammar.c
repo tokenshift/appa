@@ -4,23 +4,13 @@
 
 #include "appa.h"
 #include "grammar.h"
+#include "production.h"
 #include "token.h"
-
-struct Grammar {
-	Vector *tokens;
-	Vector *productions;
-};
-
-typedef struct {
-	NonTerminal head;
-	int len;
-	Token *tail;
-} production;
 
 Grammar *appa_create_grammar() {
 	Grammar *g = malloc(sizeof(Grammar));
 	g->tokens = create_vector(sizeof(tkn_info), 32);
-	g->productions = create_vector(sizeof(production), 32);
+	g->productions = create_vector(sizeof(Production), 32);
 	return g;
 }
 
@@ -29,7 +19,7 @@ void appa_add_rule(Grammar *g, NonTerminal nt, int len, ...) {
 	assert(nt < vec_len(g->tokens));
 	assert(((tkn_info *) vec_at(g->tokens, nt))->type == TKN_NONTERM);
 
-	production *rule = vec_push(g->productions);
+	Production *rule = vec_push(g->productions);
 	rule->head = nt;
 	rule->len = len;
 	rule->tail = calloc(len, sizeof(Token));
@@ -71,14 +61,14 @@ NonTerminal appa_nonterminal(Grammar *g, String name) {
 	return vec_len(g->tokens) - 1;
 }
 
-void write_rule(const Grammar *g, production *rule, FILE *out) {
+void write_rule(const Grammar *g, Production *rule, FILE *out) {
 	tkn_info *nt = token_at(g, rule->head);
 	fprintf(out, "%s =>", str_val(nt->name));
 
 	int i;
 	for (i = 0; i < rule->len; ++i) {
 		fprintf(out, " ");
-		write_token(g, rule->tail[i], out);
+		write_token(out, g, rule->tail[i]);
 	}
 	fprintf(out, "\n");
 }
@@ -86,7 +76,7 @@ void write_rule(const Grammar *g, production *rule, FILE *out) {
 void appa_write_grammar(const Grammar *g, FILE *out) {
 	int i;
 	for (i = 0; i < vec_len(g->productions); ++i) {
-		production *rule = vec_at(g->productions, i);
+		Production *rule = vec_at(g->productions, i);
 		write_rule(g, rule, out);
 	}
 }

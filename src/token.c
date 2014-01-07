@@ -4,7 +4,7 @@
 #include "grammar.h"
 #include "token.h"
 
-void write_token(const Grammar *g, Token t, FILE *out) {
+void write_token(FILE *out, const Grammar *g, Token t) {
 	tkn_info *tkn = token_at(g, t);
 
 	switch (tkn->type) {

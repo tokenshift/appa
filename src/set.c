@@ -35,7 +35,6 @@ Set *create_set(size_t size, set_hash_fun hash, set_comp_fun comp) {
 }
 
 void delete_set(Set *set) {
-	free(set->sets);
 	free(set);
 }
 
@@ -77,6 +76,37 @@ int set_has(Set *set, const void *item) {
 	return set_find(set, item) != 0;
 }
 
+void *set_pop(Set *set) {
+	int i;
+	for (i = 0; i < set->size; ++i) {
+		set_link *link;
+		set_link *last_link = 0;
+		for (link = &set->sets[i]; link != 0; link = link->next) {
+			if (link->item != 0 && link->next == 0) {
+				void *res = link->item;
+
+				if (last_link != 0) {
+					last_link->next = 0;
+					free(link);
+				} else {
+					link->item = 0;
+				}
+
+				return res;
+			}
+
+			last_link = link;
+		}
+	}
+
+	return 0;
+}
+
 void *set_put(Set *set, void *item) {
 	return find_or_put(set, item, item);
+}
+
+const int hash_init = 2166136261;
+int hash(int hash, int val) {
+	return (hash * 16777619) ^ val;
 }

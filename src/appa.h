@@ -12,9 +12,13 @@ typedef int Terminal;
 typedef int NonTerminal;
 
 typedef struct Grammar Grammar;
+typedef struct Parser Parser;
 
 // Creates a new grammar.
-Grammar* appa_create_grammar();
+Grammar *appa_create_grammar();
+
+// Constructs the parse table for the grammar.
+Parser *appa_compile(const Grammar *g, NonTerminal start);
 
 // Adds a literal to the grammar.
 Terminal appa_literal(Grammar *grammar, String value);

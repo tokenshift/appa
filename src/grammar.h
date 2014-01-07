@@ -5,6 +5,11 @@
 #include "string.h"
 #include "vector.h"
 
+struct Grammar {
+	Vector *tokens;
+	Vector *productions;
+};
+
 #define TKN_NONTERM	0
 #define TKN_LITERAL	1
 #define TKN_REGEX	2
