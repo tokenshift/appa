@@ -8,7 +8,7 @@ typedef struct Set Set;
 typedef int (*set_comp_fun)(const void *a, const void *b);
 typedef int (*set_hash_fun)(const void *item);
 
-Set *create_set(size_t capacity, set_hash_fun hash, set_comp_fun comp);
+Set *create_set(size_t capacity, size_t width, set_hash_fun hash, set_comp_fun comp);
 void delete_set(Set *set);
 
 // Returns a pointer to the item in the set, or 0 if it is not found.
@@ -20,11 +20,13 @@ int set_empty(Set *set);
 // Checks whether the item is present.
 int set_has(Set *set, const void *item);
 
-// Pops an arbitrary item from the set.
-void *set_pop(Set *set);
+// Returns a pointer to the first item in the set.
+void *set_first(Set *set);
 
-// Adds an item to the set if it is not already present.
-// Returns a pointer to the existing or added item.
+// Deletes the first item in the set.
+void set_pop(Set *set);
+
+// Copies an item into the set, if it does not already exist.
 void *set_put(Set *set, void *item);
 
 // Simple utility hash function.

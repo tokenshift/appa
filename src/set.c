@@ -1,109 +1,101 @@
 #include <assert.h>
+#include <string.h>
 
 #include "set.h"
-
-typedef struct set_link set_link;
-
-struct set_link {
-	void *item;
-	set_link *next;
-};
+#include "vector.h"
 
 struct Set {
 	size_t size;
+	size_t width;
 	set_hash_fun hash;
 	set_comp_fun comp;
-	set_link *sets;
+
+	Vector **items;
 };
 
-Set *create_set(size_t size, set_hash_fun hash, set_comp_fun comp) {
+Set *create_set(size_t size, size_t width, set_hash_fun hash, set_comp_fun comp) {
 	assert(size > 0);
+	assert(width > 0);
 
-	Set *set = malloc(sizeof(Set) + size*sizeof(set_link));
+	Set *set = malloc(sizeof(Set) + size*sizeof(Vector *));
 	set->size = size;
+	set->width = width;
 	set->hash = hash;
 	set->comp = comp;
-	set->sets = (set_link *) (set + sizeof(Set));
+	set->items = (Vector **)(set + sizeof(Set));
 
 	int i;
 	for (i = 0; i < size; ++i) {
-		set->sets[i].item = 0;
-		set->sets[i].next = 0;
+		set->items[i] = create_vector(width, 1);
 	}
 
 	return set;
 }
 
 void delete_set(Set *set) {
+	int i;
+	for (i = 0; i < set->size; ++i) {
+		delete_vector(set->items[i]);
+	}
+
 	free(set);
 }
 
-void *find_or_put(Set *set, const void *find, void *put) {
+void *set_alter(Set *set, const void *find, void *put) {
 	int hash = set->hash(find);
-	hash = hash % set->size;
 
-	set_link *link;
-	set_link *last_link = 0;
-	for (link = &set->sets[hash]; link != 0 && link->item != 0; link = link->next) {
-		if (set->comp(link->item, find) == 0) {
-			return link->item;
+	Vector *v = set->items[hash % set->size];
+	int i;
+	for (i = 0; i < vec_len(v); ++i) {
+		void *item = vec_at(v, i);
+		if (set->comp(item, find) == 0) {
+			return put ? 0 : item;
 		}
-
-		last_link = link;
 	}
 
 	if (put != 0) {
-		if (last_link == 0) {
-			link = &set->sets[hash];
-		} else {
-			link = last_link->next = malloc(sizeof(set_link));
-		}
-		
-		link->item = put;
-		link->next = 0;
-
-		return put;
-	}
-
-	return 0;
-}
-
-void *set_find(Set *set, const void *item) {
-	return find_or_put(set, item, 0);
-}
-
-int set_has(Set *set, const void *item) {
-	return set_find(set, item) != 0;
-}
-
-void *set_pop(Set *set) {
-	int i;
-	for (i = 0; i < set->size; ++i) {
-		set_link *link;
-		set_link *last_link = 0;
-		for (link = &set->sets[i]; link != 0; link = link->next) {
-			if (link->item != 0 && link->next == 0) {
-				void *res = link->item;
-
-				if (last_link != 0) {
-					last_link->next = 0;
-					free(link);
-				} else {
-					link->item = 0;
-				}
-
-				return res;
-			}
-
-			last_link = link;
-		}
+		void *space = vec_push(v);
+		memcpy(space, put, set->width);
 	}
 
 	return 0;
 }
 
 void *set_put(Set *set, void *item) {
-	return find_or_put(set, item, item);
+	return set_alter(set, item, item);
+}
+
+void *set_find(Set *set, const void *item) {
+	return set_alter(set, item, 0);
+}
+
+int set_has(Set *set, const void *item) {
+	return set_find(set, item) != 0;
+}
+
+void *set_pop_first(Set *set, int delete) {
+	int i;
+	for (i = 0; i < set->size; ++i) {
+		Vector *v = set->items[i];
+		if (vec_len(v) > 0) {
+			if (delete) {
+				vec_pop(v);
+				return 0;
+			} else {
+				return vec_at(v, 0);
+			}
+		}
+	}
+
+	return 0;
+}
+
+void *set_first(Set *set) {
+	return set_pop_first(set, 0);
+}
+
+void set_pop(Set *set) {
+	set_pop_first(set, 1);
 }
 
 const int hash_init = 2166136261;
