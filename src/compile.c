@@ -1,11 +1,27 @@
+#include <assert.h>
+
 #include "appa.h"
 #include "grammar.h"
 #include "item.h"
 #include "kernel.h"
+#include "map.h"
 #include "production.h"
 
 struct Parser {
 };
+
+typedef struct {
+	Token tkn;
+	Kernel kernel;
+} k_goto;
+
+int comp_goto(const void *a, const void *b) {
+	return ((k_goto *) a)->tkn - ((k_goto *) b)->tkn;
+}
+
+int hash_goto(const void *gto) {
+	return ((k_goto *) gto)->tkn;
+}
 
 Item create_start_item(const Grammar *g, NonTerminal start);
 
@@ -23,6 +39,38 @@ Parser *appa_compile(const Grammar *g, NonTerminal start) {
 	closure.items = compute_closure(g, start_kernel.items);
 
 	write_kernel(stdout, g, &closure);
+	printf("\n");
+
+	Map *gotos = create_map(8, sizeof(Kernel));
+	int i;
+	for(i = 0; i < set_len(closure.items); ++i) {
+		Item item = *(Item *)set_at(closure.items, i);
+		if (item.pos < item.rule->len) {
+			Token next = item.rule->tail[item.pos];
+			
+			Item inext;
+			inext.rule = item.rule;
+			inext.pos = item.pos + 1;
+			inext.lookahead = item.lookahead;
+
+			if (!map_contains(gotos, next)) {
+				Kernel k;
+				k.items = create_set(4, sizeof(Item), hash_item, comp_item);
+				map_put(gotos, next, &k);
+			}
+
+			Kernel *kernel = map_get(gotos, next);
+			assert(kernel != 0);
+			set_put(kernel->items, &inext);
+		}
+	}
+
+	for (i = 0; i < vec_len(g->tokens); ++i) {
+		if (map_contains(gotos, i)) {
+			write_kernel(stdout, g, map_get(gotos, i));
+			printf("\n");
+		}
+	}
 
 	return 0;
 }

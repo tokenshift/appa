@@ -13,4 +13,7 @@ typedef struct {
 Set *compute_closure(const Grammar *g, const Set *kernel);
 void write_kernel(FILE *out, const Grammar *g, const Kernel *kernel);
 
+int hash_int(const void *val);
+int comp_int(const void *a, const void *b);
+
 #endif

@@ -46,7 +46,7 @@ void *vec_at(const Vector *v, int index) {
 
 // Expands the underlying array of the vector.
 void vec_expand(Vector *v) {
-	size_t size = 1.5 * v->size + 1;
+	size_t size = ((1.5 * (v->size / v->width)) + 1) * v->width;
 	void *data = malloc(size);
 	memcpy(data, v->data + v->offset, v->length);
 	memset(data + v->length, 0, size - v->length);
