@@ -33,5 +33,6 @@ Item create_start_item(const Grammar *g, NonTerminal start) {
 	item.rule->tail = calloc(1, sizeof(Token));
 	item.rule->tail[0] = start;
 	item.pos = 0;
+	item.lookahead = EOF_SYMBOL;
 	return item;
 }

@@ -2,9 +2,18 @@
 #include <stdio.h>
 
 #include "grammar.h"
+#include "item.h"
 #include "token.h"
 
 void write_token(FILE *out, const Grammar *g, Token t) {
+	if (t == START_SYMBOL) {
+		fprintf(out, "S");
+		return;
+	} else if (t == EOF_SYMBOL) {
+		fprintf(out, "$");
+		return;
+	}
+
 	token *tkn = token_info(g, t);
 
 	switch (tkn->type) {

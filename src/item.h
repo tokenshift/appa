@@ -7,18 +7,17 @@
 #include "production.h"
 
 extern const int START_SYMBOL;
+extern const int EOF_SYMBOL;
 
 typedef struct {
 	production *rule;
 	int pos;
+	Token lookahead;
 } Item;
 
 void write_item(FILE *out, const Grammar *g, const Item item);
 
 int hash_item(const void *item);
 int comp_item(const void *a, const void *b);
-
-// Creates an item from the specified production rule.
-Item prod_item(production *prod, int pos);
 
 #endif
