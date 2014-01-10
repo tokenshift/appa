@@ -5,24 +5,22 @@
 #include "string.h"
 #include "vector.h"
 
-struct Grammar {
-	Vector *tokens;
-	Vector *productions;
-};
-
-#define TKN_NONTERM	0
-#define TKN_LITERAL	1
-#define TKN_REGEX	2
+#define TKN_NONTERM 1
+#define TKN_LITERAL 2
 
 typedef struct {
 	int type;
 	union {
 		String name;
 		String value;
-		Vector *productions;
 	};
-} tkn_info;
+} token;
 
-tkn_info *token_at(const Grammar *g, int index);
+struct Grammar {
+	Vector *tokens;
+	Vector *productions;
+};
+
+token *token_info(const Grammar *g, Token t);
 
 #endif

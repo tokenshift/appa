@@ -4,13 +4,13 @@
 #include <stdio.h>
 
 #include "appa.h"
-#include "vector.h"
+#include "set.h"
 
 typedef struct {
-	Vector *items;
+	Set *items;
 } Kernel;
 
-void compute_closure(const Grammar *g, const Kernel *kernel, Kernel *closure);
+Set *compute_closure(const Grammar *g, const Set *kernel);
 void write_kernel(FILE *out, const Grammar *g, const Kernel *kernel);
 
 #endif

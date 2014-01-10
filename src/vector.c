@@ -40,13 +40,13 @@ void delete_vector(Vector *v) {
 
 // Returns a pointer to the element at the specified index.
 void *vec_at(const Vector *v, int index) {
-	assert(index < v->length / v->width);
+	assert((index * v->width) < v->length);
 	return v->data + v->offset + index*v->width;
 }
 
 // Expands the underlying array of the vector.
 void vec_expand(Vector *v) {
-	size_t size = 1.5 * v->size;
+	size_t size = 1.5 * v->size + 1;
 	void *data = malloc(size);
 	memcpy(data, v->data + v->offset, v->length);
 	memset(data + v->length, 0, size - v->length);
@@ -55,6 +55,13 @@ void vec_expand(Vector *v) {
 
 	free(v->data);
 	v->data = data;
+}
+
+// Removes the first item from the vector.
+void vec_pop(Vector *v) {
+	assert(vec_len(v) > 0);
+	v->offset += v->width;
+	v->length -= v->width;
 }
 
 // Returns a pointer to a chunk of memory appended to the vector.

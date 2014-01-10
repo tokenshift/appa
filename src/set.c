@@ -49,13 +49,14 @@ void *set_alter(Set *set, const void *find, void *put) {
 	for (i = 0; i < vec_len(v); ++i) {
 		void *item = vec_at(v, i);
 		if (set->comp(item, find) == 0) {
-			return put ? 0 : item;
+			return item;
 		}
 	}
 
 	if (put != 0) {
 		void *space = vec_push(v);
 		memcpy(space, put, set->width);
+		return put;
 	}
 
 	return 0;
@@ -98,7 +99,32 @@ void set_pop(Set *set) {
 	set_pop_first(set, 1);
 }
 
+// Returns the length of the set.
+int set_len(const Set *set) {
+	int i, count;
+	for (i = 0, count = 0; i < set->size; ++i) {
+		count += vec_len(set->items[i]);
+	}
+	return count;
+}
+
+// Returns a pointer to the specified element.
+void *set_at(const Set *set, int index) {
+	assert(index < set_len(set));
+
+	int i;
+	for (i = 0; i < set->size; ++i) {
+		if (index >= vec_len(set->items[i])) {
+			index -= vec_len(set->items[i]);
+		} else {
+			return vec_at(set->items[i], index);
+		}
+	}
+
+	return 0;
+}
+
 const int hash_init = 2166136261;
-int hash(int hash, int val) {
+int hash(int hash, intptr_t val) {
 	return (hash * 16777619) ^ val;
 }

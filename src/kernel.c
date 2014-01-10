@@ -5,42 +5,43 @@
 #include "kernel.h"
 #include "production.h"
 #include "set.h"
+#include "token.h"
 
-void compute_closure(const Grammar *g, const Kernel *kernel, Kernel *closure) {
-	Set *new_item_set = create_set(4, hash_item, comp_item);
-	Set *items = create_set(4, hash_item, comp_item);
-	closure->items = create_vector(sizeof(Item), vec_len(kernel->items));
+Set *compute_closure(const Grammar *g, const Set *kernel) {
+	Set *new_items = create_set(4, sizeof(Item), hash_item, comp_item);
+	Set *items = create_set(4, sizeof(Item), hash_item, comp_item);
 
 	Item *item;
 	
 	// Put all kernel items in the set of new items.
 	int i;
-	for (i = 0; i < vec_len(kernel->items); ++i) {
-		Item *item = vec_at(kernel->items, i);
-		set_put(new_item_set, item);
-
-		Item *it = vec_push(closure->items);
-		it->rule = item->rule;
-		it->pos = item->pos;
+	for (i = 0; i < set_len(kernel); ++i) {
+		item = set_at(kernel, i);
+		set_put(new_items, item);
+		set_put(items, item);
 	}
 
 	// For each item in the new item set:
-	while((item = set_pop(new_item_set)) != 0) {
-		if (item->pos < item->rule->len) {
+	while((item = set_first(new_items)) != 0) {
+		Item it = *item;
+		set_pop(new_items);
+
+		if (it.pos < it.rule->len) {
 			// If FIRST(item) is a non-terminal:
-			Token t = item->rule->tail[item->pos];
-			tkn_info *tkn = token_at(g, t);
+			Token t = it.rule->tail[it.pos];
+			token *tkn = token_info(g, t);
 			if (tkn->type == TKN_NONTERM) {
 				// For each production for that non-terminal:
 				int i;
 				for (i = 0; i < vec_len(g->productions); ++i) {
-					if (((Production *)vec_at(g->productions, i))->head == t) {	
+					production *prod = vec_at(g->productions, i);
+					if (prod->head == t) {	
 						// Create item[0] from that production
-						Item *item0 = prod_item(vec_at(g->productions, i), 0);
+						Item item0 = prod_item(vec_at(g->productions, i), 0);
 						// Put item[0] in kernel
-						if (set_put(items, item0) == item0) {
+						if (set_put(items, &item0) == &item0) {
 							// If it is new, put item[0] in new_item_set
-							set_put(new_item_set, item0);
+							set_put(new_items, &item0);
 						}
 					}
 				}
@@ -48,23 +49,14 @@ void compute_closure(const Grammar *g, const Kernel *kernel, Kernel *closure) {
 		}
 	}
 
-	while((item = set_pop(items)) != 0) {
-		Item *it = vec_push(closure->items);
-		// TODO: Figure out a way to do this without allocating/deallocating
-		// the items.
-		it->rule = item->rule;
-		it->pos = item->pos;
-		free(item);
-	}
-
-	delete_set(new_item_set);
-	delete_set(items);
+	delete_set(new_items);
+	return items;
 }
 
 void write_kernel(FILE *out, const Grammar *g, const Kernel *kernel) {
 	int i;
-	for (i = 0; i < vec_len(kernel->items); ++i) {
-		Item *item = vec_at(kernel->items, i);
-		write_item(out, g, item);
+	for (i = 0; i < set_len(kernel->items); ++i) {
+		Item *item = set_at(kernel->items, i);
+		write_item(out, g, *item);
 	}
 }

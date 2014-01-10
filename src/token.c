@@ -5,7 +5,7 @@
 #include "token.h"
 
 void write_token(FILE *out, const Grammar *g, Token t) {
-	tkn_info *tkn = token_at(g, t);
+	token *tkn = token_info(g, t);
 
 	switch (tkn->type) {
 		case TKN_NONTERM:
@@ -13,9 +13,6 @@ void write_token(FILE *out, const Grammar *g, Token t) {
 			break;
 		case TKN_LITERAL:
 			fprintf(out, "\"%s\"", str_val(tkn->value));
-			break;
-		case TKN_REGEX:
-			fprintf(out, "REGEX");
 			break;
 		default:
 			assert(0);

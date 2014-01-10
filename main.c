@@ -34,5 +34,22 @@ int main(int argc, char **argv) {
 
 	appa_compile(g, exp);
 
+	/*Set *set = create_set(3, sizeof(int), hash_int, comp_int);
+
+	int values[10];
+	int i;
+	for (i = 0; i < 10; ++i) {
+		values[i] = i + 1;
+		printf("set_has(%d) => %d\n", values[i], set_has(set, &values[i]));
+	}
+
+	for (i = 0; i < 5; ++i) {
+		set_put(set, &values[i]);
+	}
+
+	for (i = 0; i < 10; ++i) {
+		printf("set_has(%d) => %d\n", values[i], set_has(set, &values[i]));
+	}*/
+
 	return 0;
 }
