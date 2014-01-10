@@ -1,4 +1,5 @@
 #include "appa.h"
+#include "grammar.h"
 #include "item.h"
 #include "kernel.h"
 #include "production.h"
@@ -16,6 +17,7 @@ Parser *appa_compile(const Grammar *g, NonTerminal start) {
 	set_put(start_kernel.items, &start_item);
 	
 	write_kernel(stdout, g, &start_kernel);
+	printf("\n");
 
 	Kernel closure;
 	closure.items = compute_closure(g, start_kernel.items);
@@ -28,11 +30,11 @@ Parser *appa_compile(const Grammar *g, NonTerminal start) {
 Item create_start_item(const Grammar *g, NonTerminal start) {
 	Item item;
 	item.rule = calloc(1, sizeof(production));
-	item.rule->head = START_SYMBOL;
+	item.rule->head = TKN_START;
 	item.rule->len = 1;
 	item.rule->tail = calloc(1, sizeof(Token));
 	item.rule->tail[0] = start;
 	item.pos = 0;
-	item.lookahead = EOF_SYMBOL;
+	item.lookahead = TKN_EOF;
 	return item;
 }

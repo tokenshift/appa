@@ -17,12 +17,12 @@ Set *create_set(size_t size, size_t width, set_hash_fun hash, set_comp_fun comp)
 	assert(size > 0);
 	assert(width > 0);
 
-	Set *set = malloc(sizeof(Set) + size*sizeof(Vector *));
+	Set *set = calloc(1, sizeof(Set));
 	set->size = size;
 	set->width = width;
 	set->hash = hash;
 	set->comp = comp;
-	set->items = (Vector **)(set + sizeof(Set));
+	set->items = calloc(size, sizeof(Vector *));
 
 	int i;
 	for (i = 0; i < size; ++i) {
@@ -106,6 +106,11 @@ int set_len(const Set *set) {
 		count += vec_len(set->items[i]);
 	}
 	return count;
+}
+
+// Checks whether the set is empty.
+int set_empty(const Set *set) {
+	return set_len(set) == 0;
 }
 
 // Returns a pointer to the specified element.

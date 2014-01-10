@@ -15,7 +15,7 @@ void delete_set(Set *set);
 void *set_find(Set *set, const void *item);
 
 // Checks whether the set is empty.
-int set_empty(Set *set);
+int set_empty(const Set *set);
 
 // Checks whether the item is present.
 int set_has(Set *set, const void *item);

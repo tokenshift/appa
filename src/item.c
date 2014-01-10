@@ -4,9 +4,6 @@
 #include "set.h"
 #include "token.h"
 
-const int START_SYMBOL = -1;
-const int EOF_SYMBOL = -2;
-
 int comp_item(const void *a, const void *b) {
 	const Item *i1, *i2;
 	i1 = a; i2 = b;

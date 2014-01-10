@@ -6,9 +6,6 @@
 #include "appa.h"
 #include "production.h"
 
-extern const int START_SYMBOL;
-extern const int EOF_SYMBOL;
-
 typedef struct {
 	production *rule;
 	int pos;

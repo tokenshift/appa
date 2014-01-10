@@ -11,6 +11,13 @@ Grammar *appa_create_grammar() {
 	Grammar *g = malloc(sizeof(Grammar));
 	g->tokens = create_vector(sizeof(token), 8);
 	g->productions = create_vector(sizeof(production), 8);
+
+	token *tkn = vec_push(g->tokens);
+	tkn->type = TKN_START;
+
+	tkn = vec_push(g->tokens);
+	tkn->type = TKN_EOF;
+
 	return g;
 }
 

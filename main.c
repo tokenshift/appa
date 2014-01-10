@@ -4,14 +4,6 @@
 #include "src/string.h"
 #include "src/set.h"
 
-int hash_int(const void *i) {
-	return *(int *)i;
-}
-
-int comp_int(const void *a, const void *b) {
-	return *(int*)a - *(int*)b;
-}
-
 int main(int argc, char **argv) {
 	Grammar *g = appa_create_grammar();
 

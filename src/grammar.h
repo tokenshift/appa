@@ -5,8 +5,10 @@
 #include "string.h"
 #include "vector.h"
 
-#define TKN_NONTERM 1
-#define TKN_LITERAL 2
+#define TKN_START 0
+#define TKN_EOF 1
+#define TKN_NONTERM 2
+#define TKN_LITERAL 4
 
 typedef struct {
 	int type;
