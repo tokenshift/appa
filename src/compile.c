@@ -24,6 +24,7 @@ int hash_goto(const void *gto) {
 }
 
 Item create_start_item(const Grammar *g, NonTerminal start);
+void compute_gotos(const Grammar *g, Kernel *start_kernel);
 
 Parser *appa_compile(const Grammar *g, NonTerminal start) {
 	Item start_item = create_start_item(g, start);
@@ -35,11 +36,14 @@ Parser *appa_compile(const Grammar *g, NonTerminal start) {
 	write_kernel(stdout, g, &start_kernel);
 	printf("\n");
 
-	Kernel closure;
-	closure.items = compute_closure(g, start_kernel.items);
+	compute_gotos(g, &start_kernel);
 
-	write_kernel(stdout, g, &closure);
-	printf("\n");
+	return 0;
+}
+
+void compute_gotos(const Grammar *g, Kernel *start_kernel) {
+	Kernel closure;
+	closure.items = compute_closure(g, start_kernel->items);
 
 	Map *gotos = create_map(8, sizeof(Kernel));
 	int i;
@@ -71,8 +75,6 @@ Parser *appa_compile(const Grammar *g, NonTerminal start) {
 			printf("\n");
 		}
 	}
-
-	return 0;
 }
 
 Item create_start_item(const Grammar *g, NonTerminal start) {
