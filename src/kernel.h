@@ -4,10 +4,12 @@
 #include <stdio.h>
 
 #include "appa.h"
+#include "map.h"
 #include "set.h"
 
 typedef struct {
 	Set *items;
+	Map *gotos;
 } Kernel;
 
 Set *compute_closure(const Grammar *g, const Set *kernel);

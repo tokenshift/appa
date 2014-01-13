@@ -11,6 +11,11 @@ struct Map {
 	Vector **data;
 };
 
+typedef struct {
+	int key;
+	void *val;
+} map_entry;
+
 Map *create_map(size_t size, size_t width) {
 	assert(size > 0);
 	assert(width > 0);
@@ -22,7 +27,7 @@ Map *create_map(size_t size, size_t width) {
 
 	int i;
 	for (i = 0; i < size; ++i) {
-		map->data[i] = create_vector(sizeof(int) + width, 1);
+		map->data[i] = create_vector(sizeof(map_entry), 1);
 	}
 
 	return map;
@@ -46,30 +51,30 @@ void *map_get(const Map *m, int key) {
 
 	int i;
 	for (i = 0; i < vec_len(v); ++i) {
-		int *entry = vec_at(v, i);
-		if (*entry == key) {
-			return entry + sizeof(int);
+		map_entry *entry = vec_at(v, i);
+		if (entry->key == key) {
+			return entry->val;
 		}
 	}
 
 	return 0;
 }
 
-void map_put(Map *m, int key, const void *val) {
+void map_put(Map *m, int key, void *val) {
 	Vector *v = m->data[key % m->size];
 
-	int i, *entry;
+	int i;
 	for (i = 0; i < vec_len(v); ++i) {
-		entry = vec_at(v, i);
-		if (*entry == key) {
+		map_entry *entry = vec_at(v, i);
+		if (entry->key == key) {
 			// Overwrite this entry.
-			memcpy(entry + sizeof(int), val, m->width);
+			entry->val = val;
 			return;
 		}
 	}
 
 	// Otherwise, create a new entry.
-	entry = vec_push(v);
-	*entry = key;
-	memcpy(entry + sizeof(int), val, m->width);
+	map_entry *entry = vec_push(v);
+	entry->key = key;
+	entry->val = val;
 }

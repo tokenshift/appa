@@ -8,6 +8,6 @@ void delete_map(Map *m);
 
 int map_contains(const Map *m, int key);
 void *map_get(const Map *m, int key);
-void map_put(Map *m, int key, const void *val);
+void map_put(Map *m, int key, void *val);
 
 #endif
