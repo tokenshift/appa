@@ -68,10 +68,11 @@ void compute_gotos(const Grammar *g, Kernel *start_kernel) {
 
 	Kernel *kernel;
 	while ((kernel = set_first(new_kernels)) != 0) {
+		// Build the GOTO kernels for this kernel.
 		Kernel closure;
 		closure.items = compute_closure(g, kernel->items);
 		closure.gotos = 0;
-
+		
 		Item *item;
 		while ((item = set_first(closure.items)) != 0) {
 			if (item->pos < item->rule->len) {
@@ -96,16 +97,28 @@ void compute_gotos(const Grammar *g, Kernel *start_kernel) {
 			set_pop(closure.items);
 		}
 
+		// Add all of the GOTO kernels to the set of kernels.
 		int i;
 		for (i = 0; i < vec_len(g->tokens); ++i) {
 			if (map_contains(kernel->gotos, i)) {
-				write_kernel(stdout, g, map_get(kernel->gotos, i));
-				printf("\n");
+				Kernel *kgoto = map_get(kernel->gotos, i);
+				// If the kernel was not already in the set, add it to the
+				// set of kernels to be processed/expanded.
+				if (set_put(kernels, kgoto) == kgoto) {
+					set_put(new_kernels, kgoto);
+				}
 			}
 		}
 
 		delete_set(closure.items);
 		set_pop(new_kernels);
+	}
+
+	int i;
+	for (i = 0; i < set_len(kernels); ++i) {
+		printf("KERNEL\n");
+		write_kernel(stdout, g, set_at(kernels, i));
+		printf("\n");
 	}
 }
 
