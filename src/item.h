@@ -12,9 +12,12 @@ typedef struct {
 	Token lookahead;
 } Item;
 
-void write_item(FILE *out, const Grammar *g, const Item item);
+// Checks whether two item cores (ignoring lookaheads) are identical.
+int item_core_eq(const Item a, const Item b);
 
-int hash_item(const void *item);
-int comp_item(const void *a, const void *b);
+// Checks whether two items are identical.
+int item_eq(const Item a, const Item b);
+
+void write_item(FILE *out, const Grammar *g, const Item item);
 
 #endif

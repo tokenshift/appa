@@ -4,18 +4,37 @@
 #include <stdio.h>
 
 #include "appa.h"
+#include "item_set.h"
 #include "map.h"
-#include "set.h"
 
 typedef struct {
-	Set *items;
+	const Grammar *g;
+	ItemSet *items;
 	Map *gotos;
 } Kernel;
 
-Set *compute_closure(const Grammar *g, const Set *kernel);
-void write_kernel(FILE *out, const Grammar *g, const Kernel *kernel);
+// Creates a new LALR kernel.
+Kernel *kernel_new(const Grammar *g);
 
-int hash_int(const void *val);
-int comp_int(const void *a, const void *b);
+// Deletes an LALR kernel.
+void kernel_delete(Kernel *k);
+
+// Adds an item to the kernel.
+void kernel_add(Kernel *k, Item item);
+
+// Gets the item at the specified index.
+Item kernel_at(const Kernel *k, int index);
+
+// Computes the closure of the kernel.
+ItemSet *kernel_closure(const Kernel *k);
+
+// Checks whether the cores of the kernels (items without lookaheads) match.
+int kernel_core_eq(const Kernel *a, const Kernel *b);
+
+// Gets the number of items in the kernel.
+int kernel_len(const Kernel *k);
+
+// Writes the kernel contents (for debugging).
+void write_kernel(const Kernel *k, FILE *out);
 
 #endif

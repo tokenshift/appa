@@ -18,7 +18,7 @@ void write_token(FILE *out, const Grammar *g, Token t) {
 			fprintf(out, "<%s>", str_val(tkn->name));
 			break;
 		case TKN_LITERAL:
-			fprintf(out, "\"%s\"", str_val(tkn->value));
+			fprintf(out, "'%s'", str_val(tkn->value));
 			break;
 		default:
 			assert(0);

@@ -1,0 +1,9 @@
+digraph {
+	node [shape=box];
+
+	"3918402173" [label="<E> => <V> ., '+'"];
+
+	"1871679750" [style=bold, label="S => . <E>, $"];
+
+	"1770970111" [label="S => <E> ., $"];
+}

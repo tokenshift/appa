@@ -1,125 +1,126 @@
 #include <assert.h>
 
 #include "appa.h"
+#include "compile.h"
 #include "grammar.h"
 #include "item.h"
+#include "item_set.h"
 #include "kernel.h"
+#include "kernel_set.h"
 #include "map.h"
 #include "production.h"
 
 struct Parser {
 };
 
-int comp_kernel(const void *a, const void *b) {
-	const Kernel *k1, *k2;
-	k1 = a;
-	k2 = b;
+KernelSet *compute_gotos(const Kernel *start_kernel);
 
-	if (set_len(k1->items) != set_len(k2->items)) {
-		return set_len(k1->items) - set_len(k2->items);
-	}
+Kernel *create_start_kernel(const Grammar *g, NonTerminal start) {
+	Kernel *kernel = kernel_new(g);
+	item_set_add(kernel->items, create_start_item(g, start));
+	return kernel;
+}
 
-	int i;
-	for (i = 0; i < set_len(k1->items); ++i) {
-		Item *item = set_at(k1->items, i);
-		if (set_find(k2->items, item) == 0) {
-			return -1;
+Parser *appa_compile(const Grammar *g, NonTerminal start) {
+	Kernel *start_kernel = create_start_kernel(g, start);
+	compute_gotos(start_kernel);
+
+	return 0;
+}
+
+void appa_write_dot_grammar(const Grammar *g, FILE *out, NonTerminal start) {
+	Kernel *start_kernel = create_start_kernel(g, start);
+	KernelSet *kernels = compute_gotos(start_kernel);
+
+	fprintf(out, "digraph {\n\tnode [shape=box];\n");
+
+	int k;
+	for (k = 0; k < kernel_set_len(kernels); ++k) {
+		const Kernel *kernel = kernel_set_at(kernels, k);
+
+		if (kernel == start_kernel) {
+			fprintf(out, "\n\t\"%p\" [style=bold, label=\"", kernel);
+		} else {
+			fprintf(out, "\n\t\"%p\" [label=\"", kernel);
+		}
+
+		int i;
+		for (i = 0; i < kernel_len(kernel); ++i) {
+			Item item = kernel_at(kernel, i);
+			if (i != 0) {
+				fprintf(out, "\\n");
+			}
+
+			write_item(out, g, item);
+		}
+		fprintf(out, "\"];\n");
+
+		int t;
+		for (t = 0; t < vec_len(g->tokens); ++t) {
+			if (map_contains(kernel->gotos, t)) {
+				fprintf(out, "\t\"%p\" -> \"%p\";\n", kernel, map_get(kernel->gotos, t));
+			}
 		}
 	}
 
-	return 0;
+	fprintf(out, "}\n");
 }
 
-int hash_kernel(const void *k) {
-	const Kernel *kernel = k;
-	int i;
-	int hash = 0;
-	for (i = 0; i < set_len(kernel->items); ++i) {
-		hash = hash ^ hash_item(set_at(kernel->items, i));
-	}
+KernelSet *compute_gotos(const Kernel *start_kernel) {
+	KernelSet *kernels = kernel_set_new();
+	kernel_set_add(kernels, start_kernel);
 
-	return hash;
-}
+	int k;
+	for (k = 0; k < kernel_set_len(kernels); ++k) {
+		Kernel *kernel = kernel_set_at(kernels, k);
 
-Item create_start_item(const Grammar *g, NonTerminal start);
-void compute_gotos(const Grammar *g, Kernel *start_kernel);
-
-Parser *appa_compile(const Grammar *g, NonTerminal start) {
-	Item start_item = create_start_item(g, start);
-
-	Kernel start_kernel;
-	start_kernel.items = create_set(1, sizeof(Item), hash_item, comp_item);
-	start_kernel.gotos = create_map(4, sizeof(Kernel *));
-	set_put(start_kernel.items, &start_item);
-	
-	write_kernel(stdout, g, &start_kernel);
-	printf("\n");
-
-	compute_gotos(g, &start_kernel);
-
-	return 0;
-}
-
-void compute_gotos(const Grammar *g, Kernel *start_kernel) {
-	Set *kernels = create_set(8, sizeof(Kernel), hash_kernel, comp_kernel);
-	Set *new_kernels = create_set(8, sizeof(Kernel), hash_kernel, comp_kernel);
-	set_put(kernels, start_kernel);
-	set_put(new_kernels, start_kernel);
-
-	Kernel *kernel;
-	while ((kernel = set_first(new_kernels)) != 0) {
 		// Build the GOTO kernels for this kernel.
-		Kernel closure;
-		closure.items = compute_closure(g, kernel->items);
-		closure.gotos = 0;
-		
-		Item *item;
-		while ((item = set_first(closure.items)) != 0) {
-			if (item->pos < item->rule->len) {
-				Token next = item->rule->tail[item->pos];
+		ItemSet *closure = kernel_closure(kernel);
+
+		int i;
+		for (i = 0; i < item_set_len(closure); ++i) {
+			Item item = item_set_at(closure, i);
+			if (item.pos < item.rule->len) {
+				Token next = item.rule->tail[item.pos];
 
 				Item inext;
-				inext.rule = item->rule;
-				inext.pos = item->pos + 1;
-				inext.lookahead = item->lookahead;
+				inext.rule = item.rule;
+				inext.pos = item.pos + 1;
+				inext.lookahead = item.lookahead;
 
 				Kernel *kgoto;
 				if ((kgoto = map_get(kernel->gotos, next)) == 0) {
-					kgoto = calloc(1, sizeof(Kernel));
-					kgoto->items = create_set(4, sizeof(Item), hash_item, comp_item);
-					kgoto->gotos = create_map(4, sizeof(Kernel *));
+					kgoto = kernel_new(kernel->g);
 					map_put(kernel->gotos, next, kgoto);
 				}
 
-				set_put(kgoto->items, &inext);
+				kernel_add(kgoto, inext);
 			}
-
-			set_pop(closure.items);
 		}
 
+		item_set_delete(closure);
+
 		// Add all of the GOTO kernels to the set of kernels.
-		int i;
-		for (i = 0; i < vec_len(g->tokens); ++i) {
-			if (map_contains(kernel->gotos, i)) {
-				Kernel *kgoto = map_get(kernel->gotos, i);
-				// If the kernel was not already in the set, add it to the
-				// set of kernels to be processed/expanded.
-				if (set_put(kernels, kgoto) == kgoto) {
-					set_put(new_kernels, kgoto);
+		for (i = 0; i < vec_len(kernel->g->tokens); ++i) {
+			Kernel *kgoto = map_get(kernel->gotos, i);
+			if (kgoto != 0) {
+				Kernel *actual = kernel_set_find_by_core(kernels, kgoto);
+				if (actual == 0) {
+					// If the kernel was not already in the set, add it to the
+					// set of kernels to be processed/expanded.
+					kernel_set_add(kernels, kgoto);
+				} else {
+					// Otherwise, delete the duplicate kernel and repoint at
+					// the existing one.
+					// TODO: Merge lookaheads.
+					kernel_delete(kgoto);
+					map_put(kernel->gotos, i, actual);
 				}
 			}
 		}
-
-		delete_set(closure.items);
-		set_pop(new_kernels);
 	}
 
-	int i;
-	for (i = 0; i < set_len(kernels); ++i) {
-		printf("KERNEL\n");
-		write_kernel(stdout, g, set_at(kernels, i));
-		printf("\n");
-	}
+	return kernels;
 }
 
 Item create_start_item(const Grammar *g, NonTerminal start) {

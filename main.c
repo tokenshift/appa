@@ -1,8 +1,6 @@
 #include <stdio.h>
 
 #include "src/appa.h"
-#include "src/string.h"
-#include "src/set.h"
 
 int main(int argc, char **argv) {
 	Grammar *g = appa_create_grammar();
@@ -20,11 +18,7 @@ int main(int argc, char **argv) {
 	appa_add_rule(g, val, 1, num);
 	appa_add_rule(g, val, 3, val, mul, num);
 
-	appa_write_grammar(g, stdout);
-
-	printf("\n\n");
-
-	appa_compile(g, exp);
+	appa_write_dot_grammar(g, stdout, exp);
 
 	return 0;
 }

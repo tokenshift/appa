@@ -4,6 +4,9 @@
 #include "vector.h"
 
 struct Vector {
+	// The size of the elements in the array.
+	size_t width;
+
 	// The size of the underlying array (number of elements).
 	size_t size;
 
@@ -13,58 +16,54 @@ struct Vector {
 	// The number of elements in the used portion of the array.
 	int length;
 
-	// The underlying array containing the data.
-	void **data;
+	// The underlying array.
+	void *data;
 };
 
-Vector *create_vector(size_t size) {
+void *vec_new(size_t width, size_t capacity) {
+	assert(width > 0);
+	assert(capacity >= 0);
+
 	Vector *v = calloc(1, sizeof(Vector));
-	v->size = size;
-	v->data = calloc(size, sizeof(void *));
+	v->width = width;
+	v->size = capacity;
+	v->data = calloc(capacity, width);
+
 	return v;
 }
 
-void delete_vector(Vector *v) {
+void vec_delete(Vector *v) {
 	free(v->data);
 	free(v);
 }
 
 void *vec_at(const Vector *v, int index) {
 	assert(index < v->length);
-	return v->data[index];
+	return v->data + (v->offset + index)*v->width;
 }
 
-void vec_expand(Vector *v) {
-	size_t size = 1.5 * v->size + 1;
-	void **data = calloc(size, sizeof(void *));
+int vec_len(const Vector *v) {
+	return v->length;
+}
 
-	memcpy(data, &v->data[v->offset], v->length * sizeof(void *));
-	memset(&data[v->length], 0, (size - v->length) * sizeof(void *));
-	v->size = size;
-	v->offset = 0;
+void expand_vector(Vector *v) {
+	size_t size = 1.5*v->size + 1;
+	void * used_start = v->data + v->offset*v->width;
+	size_t used_length = v->length*v->width;
+
+	void *data = calloc(size, v->width);
+	memcpy(data, used_start, used_length);
+	memset(data + used_length, 0, size - used_length);
 
 	free(v->data);
 	v->data = data;
 }
 
-void *vec_pop(Vector *v) {
-	assert(v->length > 0);
-	
-	void *item = v->data[0];
-	++v->offset;
-	--v->length;
-	return item;
-}
-
-void vec_push(Vector *v, void *item) {
-	if (v->offset + v->length >= v->size) {
-		vec_expand(v);
+void *vec_push(Vector *v) {
+	if (v->length + v->offset >= v->size) {
+		// Expand the vector.
+		expand_vector(v);
 	}
 
-	++v->length;
-	v->data[v->offset + v->length] = item;
-}
-
-int vec_len(const Vector *v) {
-	return v->length;
+	return v->data + (v->offset + v->length)*v->width;
 }

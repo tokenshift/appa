@@ -1,27 +1,14 @@
 #include <assert.h>
 
 #include "item.h"
-#include "set.h"
 #include "token.h"
 
-int comp_item(const void *a, const void *b) {
-	const Item *i1, *i2;
-	i1 = a; i2 = b;
-
-	if (i1->rule != i2->rule) {
-		return i1->rule - i2->rule;
-	}
-
-	if (i1->lookahead != i2->lookahead) {
-		return i1->lookahead - i2->lookahead;
-	}
-	
-	return i1->pos - i2->pos;
+int item_core_eq(Item a, Item b) {
+	return a.rule == b.rule && a.pos == b.pos;
 }
 
-int hash_item(const void *item) {
-	const Item *i = item;
-	return hash(hash(hash(hash_init, i->pos), (intptr_t) i->rule), i->lookahead);
+int item_eq(Item a, Item b) {
+	return item_core_eq(a, b) && a.lookahead == b.lookahead;
 }
 
 void write_item(FILE *out, const Grammar *g, const Item item) {
@@ -44,5 +31,4 @@ void write_item(FILE *out, const Grammar *g, const Item item) {
 
 	fprintf(out, ", ");
 	write_token(out, g, item.lookahead);
-	fprintf(out, "\n");
 }

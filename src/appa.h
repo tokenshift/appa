@@ -17,6 +17,9 @@ typedef struct Parser Parser;
 // Creates a new grammar.
 Grammar *appa_create_grammar();
 
+// Deletes a grammar, releasing allocated memory.
+void appa_delete_grammar(Grammar *g);
+
 // Constructs the parse table for the grammar.
 Parser *appa_compile(const Grammar *g, NonTerminal start);
 
@@ -31,5 +34,8 @@ void appa_add_rule(Grammar *grammar, NonTerminal head, int len, ...);
 
 // Writes all of the grammar's production rules to the specified output stream.
 void appa_write_grammar(const Grammar *g, FILE *out);
+
+// Writes the LALR automaton in Graphviz .dot format.
+void appa_write_dot_grammar(const Grammar *g, FILE *out, NonTerminal start);
 
 #endif

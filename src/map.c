@@ -6,8 +6,6 @@
 
 struct Map {
 	size_t size;
-	size_t width;
-
 	Vector **data;
 };
 
@@ -16,29 +14,26 @@ typedef struct {
 	void *val;
 } map_entry;
 
-Map *create_map(size_t size, size_t width) {
+Map *map_new(size_t size) {
 	assert(size > 0);
-	assert(width > 0);
 
 	Map *map = calloc(1, sizeof(Map));
 	map->size = size;
-	map->width = width;
 	map->data = calloc(size, sizeof(Vector *));
 
 	int i;
 	for (i = 0; i < size; ++i) {
-		map->data[i] = create_vector(sizeof(map_entry), 1);
+		map->data[i] = vec_new(sizeof(map_entry), 1);
 	}
 
 	return map;
 }
 
-void delete_map(Map *m) {
+void map_delete(Map *m) {
 	int i;
 	for (i = 0; i < m->size; ++i) {
-		delete_vector(m->data[i]);
+		vec_delete(m->data[i]);
 	}
-
 	free(m);
 }
 
