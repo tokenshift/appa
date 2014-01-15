@@ -112,8 +112,12 @@ KernelSet *compute_gotos(Kernel *start_kernel) {
 					kernel_set_add(kernels, kgoto);
 				} else {
 					// Otherwise, delete the duplicate kernel and repoint at
-					// the existing one.
-					// TODO: Merge lookaheads.
+					// the existing one (after merging newly discovered
+					// lookaheads into the existing kernel).
+					int j;
+					for (j = 0; j < kernel_len(kgoto); ++j) {
+						kernel_add(actual, kernel_at(kgoto, j));
+					}
 					kernel_delete(kgoto);
 					map_put(kernel->gotos, i, actual);
 				}

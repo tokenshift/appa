@@ -144,12 +144,19 @@ void compute_closure_items_for_production(const Grammar *g, Item item, productio
 	// Compute FIRST terminals for NEXT token.
 	TokenSet *firsts = compute_token_firsts(g, next);
 
-	// Create item[0] for the production.
-	Item item0;
-	item0.rule = prod;
-	item0.pos = 0;
-	item0.lookahead = next; // TODO: iterate for FIRSTs.
-	item_set_add(closure, item0);
+	// Create an item for each FIRST terminal.
+	int i;
+	for (i = 0; i < token_set_len(firsts); ++i) {
+		Token t = token_set_at(firsts, i);
+		token *token = token_info(g, t);
+		if (token->type != TKN_NONTERM) {
+			Item item0;
+			item0.rule = prod;
+			item0.pos = 0;
+			item0.lookahead = next;
+			item_set_add(closure, item0);
+		}
+	}
 
 	token_set_delete(firsts);
 }
