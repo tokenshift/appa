@@ -75,6 +75,24 @@ Terminal appa_literal(Grammar *g, String value) {
 	return vec_len(g->tokens) - 1;
 }
 
+Terminal appa_regex(Grammar *g, String pattern) {
+	// Check for an existing literal with the same value.
+	int i;
+	for (i = 0; i < vec_len(g->tokens); ++i) {
+		token *tkn = vec_at(g->tokens, i);
+		if (tkn->type == TKN_REGEX &&
+			str_cmp(tkn->pattern, pattern) == 0) {
+			return i;
+		}
+	}
+
+	// Create a new literal.
+	token *term = vec_push(g->tokens);
+	term->type = TKN_REGEX;
+	term->pattern = pattern;
+	return vec_len(g->tokens) - 1;
+}
+
 NonTerminal appa_nonterminal(Grammar *g, String name) {
 	// Check for an existing non-terminal with the same name.
 	int i;

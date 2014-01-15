@@ -50,7 +50,7 @@ void appa_write_dot_grammar(const Grammar *g, FILE *out, NonTerminal start) {
 				fprintf(out, "\\n");
 			}
 
-			write_item(out, g, item);
+			write_item_escaped(out, g, item);
 		}
 		fprintf(out, "\"];\n");
 
@@ -58,7 +58,7 @@ void appa_write_dot_grammar(const Grammar *g, FILE *out, NonTerminal start) {
 		for (t = 0; t < vec_len(g->tokens); ++t) {
 			if (map_contains(kernel->gotos, t)) {
 				fprintf(out, "\t\"%p\" -> \"%p\" [label=\"", kernel, map_get(kernel->gotos, t));
-				write_token(out, g, t);
+				write_token_escaped(out, g, t);
 				fprintf(out, "\"];\n");
 			}
 		}

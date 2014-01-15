@@ -9,12 +9,14 @@
 #define TKN_EOF 1
 #define TKN_NONTERM 2
 #define TKN_LITERAL 4
+#define TKN_REGEX 8
 
 typedef struct {
 	int type;
 	union {
 		String name;
 		String value;
+		String pattern;
 	};
 } token;
 

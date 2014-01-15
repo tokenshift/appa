@@ -19,5 +19,6 @@ int item_core_eq(const Item a, const Item b);
 int item_eq(const Item a, const Item b);
 
 void write_item(FILE *out, const Grammar *g, const Item item);
+void write_item_escaped(FILE *out, const Grammar *g, const Item item);
 
 #endif

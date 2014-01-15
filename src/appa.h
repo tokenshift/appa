@@ -23,14 +23,17 @@ void appa_delete_grammar(Grammar *g);
 // Constructs the parse table for the grammar.
 Parser *appa_compile(const Grammar *g, NonTerminal start);
 
-// Adds a literal to the grammar.
-Terminal appa_literal(Grammar *grammar, String value);
+// Adds a literal (terminal) to the grammar.
+Terminal appa_literal(Grammar *g, String value);
 
 // Adds a non-terminal symbol to the grammar.
-NonTerminal appa_nonterminal(Grammar *grammar, String name);
+NonTerminal appa_nonterminal(Grammar *g, String name);
+
+// Adds a regular expression (terminal) to the grammar.
+Terminal appa_regex(Grammar *g, String pattern);
 
 // Adds a production to the specified non-terminal symbol.
-void appa_add_rule(Grammar *grammar, NonTerminal head, int len, ...);
+void appa_add_rule(Grammar *g, NonTerminal head, int len, ...);
 
 // Writes all of the grammar's production rules to the specified output stream.
 void appa_write_grammar(const Grammar *g, FILE *out);
