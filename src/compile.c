@@ -9,6 +9,7 @@
 #include "kernel_set.h"
 #include "map.h"
 #include "production.h"
+#include "token.h"
 
 struct Parser {
 };
@@ -56,7 +57,9 @@ void appa_write_dot_grammar(const Grammar *g, FILE *out, NonTerminal start) {
 		int t;
 		for (t = 0; t < vec_len(g->tokens); ++t) {
 			if (map_contains(kernel->gotos, t)) {
-				fprintf(out, "\t\"%p\" -> \"%p\";\n", kernel, map_get(kernel->gotos, t));
+				fprintf(out, "\t\"%p\" -> \"%p\" [label=\"", kernel, map_get(kernel->gotos, t));
+				write_token(out, g, t);
+				fprintf(out, "\"];\n");
 			}
 		}
 	}

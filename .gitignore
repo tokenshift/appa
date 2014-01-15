@@ -5,3 +5,5 @@
 *.o
 *.a
 appa
+*.dot
+*.dot.png
