@@ -5,8 +5,7 @@
 #include "vector.h"
 
 struct Map {
-	size_t size;
-	Vector **data;
+	Vector *data;
 };
 
 typedef struct {
@@ -14,26 +13,14 @@ typedef struct {
 	void *val;
 } map_entry;
 
-Map *map_new(size_t size) {
-	assert(size > 0);
-
+Map *map_new() {
 	Map *map = calloc(1, sizeof(Map));
-	map->size = size;
-	map->data = calloc(size, sizeof(Vector *));
-
-	int i;
-	for (i = 0; i < size; ++i) {
-		map->data[i] = vec_new(sizeof(map_entry), 1);
-	}
-
+	map->data = vec_new(sizeof(map_entry), 4);
 	return map;
 }
 
 void map_delete(Map *m) {
-	int i;
-	for (i = 0; i < m->size; ++i) {
-		vec_delete(m->data[i]);
-	}
+	vec_delete(m->data);
 	free(m);
 }
 
@@ -41,35 +28,30 @@ int map_contains(const Map *m, int key) {
 	return map_get(m, key) != 0;
 }
 
-void *map_get(const Map *m, int key) {
-	Vector *v = m->data[key % m->size];
-
+map_entry *get_map_entry(const Map *m, int key) {
 	int i;
-	for (i = 0; i < vec_len(v); ++i) {
-		map_entry *entry = vec_at(v, i);
+	for (i = 0; i < vec_len(m->data); ++i) {
+		map_entry *entry = vec_at(m->data, i);
 		if (entry->key == key) {
-			return entry->val;
+			return entry;
 		}
 	}
 
 	return 0;
 }
 
+void *map_get(const Map *m, int key) {
+	map_entry *entry = get_map_entry(m, key);
+	return entry ? entry->val : 0;
+}
+
 void map_put(Map *m, int key, void *val) {
-	Vector *v = m->data[key % m->size];
-
-	int i;
-	for (i = 0; i < vec_len(v); ++i) {
-		map_entry *entry = vec_at(v, i);
-		if (entry->key == key) {
-			// Overwrite this entry.
-			entry->val = val;
-			return;
-		}
+	map_entry *entry = get_map_entry(m, key);
+	if (entry == 0) {
+		entry = vec_push(m->data);
+		entry->key = key;
+		entry->val = val;
+	} else {
+		entry->val = val;
 	}
-
-	// Otherwise, create a new entry.
-	map_entry *entry = vec_push(v);
-	entry->key = key;
-	entry->val = val;
 }

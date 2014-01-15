@@ -12,7 +12,7 @@ KernelSet *kernel_set_new();
 void kernel_set_delete(KernelSet *set);
 
 // Adds a kernel to the kernel set.
-void kernel_set_add(KernelSet *set, const Kernel *k);
+void kernel_set_add(KernelSet *set, Kernel *k);
 
 // Gets the kernel at the specified index.
 Kernel *kernel_set_at(const KernelSet *set, int index);
@@ -22,6 +22,6 @@ int kernel_set_len(const KernelSet *set);
 
 // Finds a kernel in the set whose core (items without lookaheads) matches the
 // core of the specified kernel.
-Kernel *kernel_set_find_by_core(const KernelSet *set, const Kernel *k);
+Kernel *kernel_set_find_by_core(const KernelSet *set, Kernel *k);
 
 #endif

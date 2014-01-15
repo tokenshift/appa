@@ -7,6 +7,6 @@
 #include "kernel_set.h"
 
 Item create_start_item(const Grammar *g, NonTerminal start);
-KernelSet *compute_gotos(const Kernel *start_kernel);
+KernelSet *compute_gotos(Kernel *start_kernel);
 
 #endif

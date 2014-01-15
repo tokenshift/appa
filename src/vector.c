@@ -53,10 +53,11 @@ void expand_vector(Vector *v) {
 
 	void *data = calloc(size, v->width);
 	memcpy(data, used_start, used_length);
-	memset(data + used_length, 0, size - used_length);
-
+	memset(data + used_length, 0, size*v->width - used_length);
 	free(v->data);
+
 	v->data = data;
+	v->size = size;
 }
 
 void *vec_push(Vector *v) {
@@ -65,5 +66,6 @@ void *vec_push(Vector *v) {
 		expand_vector(v);
 	}
 
-	return v->data + (v->offset + v->length)*v->width;
+	++v->length;
+	return v->data + (v->offset + v->length - 1)*v->width;
 }

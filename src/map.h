@@ -5,7 +5,7 @@
 typedef struct Map Map;
 
 // Creates a new map.
-Map *map_new(size_t size);
+Map *map_new();
 
 // Deletes a map.
 void map_delete(Map *m);

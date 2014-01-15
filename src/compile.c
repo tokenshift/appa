@@ -13,8 +13,6 @@
 struct Parser {
 };
 
-KernelSet *compute_gotos(const Kernel *start_kernel);
-
 Kernel *create_start_kernel(const Grammar *g, NonTerminal start) {
 	Kernel *kernel = kernel_new(g);
 	item_set_add(kernel->items, create_start_item(g, start));
@@ -66,7 +64,7 @@ void appa_write_dot_grammar(const Grammar *g, FILE *out, NonTerminal start) {
 	fprintf(out, "}\n");
 }
 
-KernelSet *compute_gotos(const Kernel *start_kernel) {
+KernelSet *compute_gotos(Kernel *start_kernel) {
 	KernelSet *kernels = kernel_set_new();
 	kernel_set_add(kernels, start_kernel);
 
