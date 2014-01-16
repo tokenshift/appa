@@ -24,8 +24,8 @@ void kernel_delete(Kernel *k) {
 	free(k);
 }
 
-void kernel_add(Kernel *k, Item item) {
-	item_set_add(k->items, item);
+int kernel_add(Kernel *k, Item item) {
+	return item_set_add(k->items, item);
 }
 
 Item kernel_at(const Kernel *k, int index) {
@@ -95,11 +95,7 @@ int kernel_len(const Kernel *k) {
 }
 
 void write_kernel(const Kernel *kernel, FILE *out) {
-	int i;
-	for (i = 0; i < item_set_len(kernel->items); ++i) {
-		Item item = item_set_at(kernel->items, i);
-		write_item(out, kernel->g, item);
-	}
+	write_item_set(out, kernel->g, kernel->items);
 }
 
 TokenSet *compute_token_firsts(const Grammar *g, Token t) {

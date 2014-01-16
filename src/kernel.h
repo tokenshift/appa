@@ -19,8 +19,9 @@ Kernel *kernel_new(const Grammar *g);
 // Deletes an LALR kernel.
 void kernel_delete(Kernel *k);
 
-// Adds an item to the kernel.
-void kernel_add(Kernel *k, Item item);
+// Adds an item to the kernel. Returns 1 if the item was added; 0 if it already
+// existed.
+int kernel_add(Kernel *k, Item item);
 
 // Gets the item at the specified index.
 Item kernel_at(const Kernel *k, int index);

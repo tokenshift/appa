@@ -71,12 +71,17 @@ KernelSet *compute_gotos(Kernel *start_kernel) {
 	KernelSet *kernels = kernel_set_new();
 	kernel_set_add(kernels, start_kernel);
 
+	KernelSet *processing = kernel_set_new();
+	kernel_set_add(processing, start_kernel);
+
 	int k;
-	for (k = 0; k < kernel_set_len(kernels); ++k) {
-		Kernel *kernel = kernel_set_at(kernels, k);
+	for (k = 0; k < kernel_set_len(processing); ++k) {
+		Kernel *kernel = kernel_set_at(processing, k);
 
 		// Build the GOTO kernels for this kernel.
 		ItemSet *closure = kernel_closure(kernel);
+
+		Map *gotos = map_new();
 
 		int i;
 		for (i = 0; i < item_set_len(closure); ++i) {
@@ -90,9 +95,9 @@ KernelSet *compute_gotos(Kernel *start_kernel) {
 				inext.lookahead = item.lookahead;
 
 				Kernel *kgoto;
-				if ((kgoto = map_get(kernel->gotos, next)) == 0) {
+				if ((kgoto = map_get(gotos, next)) == 0) {
 					kgoto = kernel_new(kernel->g);
-					map_put(kernel->gotos, next, kgoto);
+					map_put(gotos, next, kgoto);
 				}
 
 				kernel_add(kgoto, inext);
@@ -103,28 +108,42 @@ KernelSet *compute_gotos(Kernel *start_kernel) {
 
 		// Add all of the GOTO kernels to the set of kernels.
 		for (i = 0; i < vec_len(kernel->g->tokens); ++i) {
-			Kernel *kgoto = map_get(kernel->gotos, i);
-			if (kgoto != 0) {
-				Kernel *actual = kernel_set_find_by_core(kernels, kgoto);
-				if (actual == 0) {
-					// If the kernel was not already in the set, add it to the
-					// set of kernels to be processed/expanded.
-					kernel_set_add(kernels, kgoto);
-				} else {
-					// Otherwise, delete the duplicate kernel and repoint at
-					// the existing one (after merging newly discovered
-					// lookaheads into the existing kernel).
-					int j;
-					for (j = 0; j < kernel_len(kgoto); ++j) {
-						kernel_add(actual, kernel_at(kgoto, j));
+			Kernel *kgoto = map_get(gotos, i);
+			if (kgoto == 0) continue;
+
+			// Check whether a kernel with the same core already exists.
+			Kernel *actual = kernel_set_find_by_core(kernels, kgoto);
+			if (actual == 0) {
+				// If the kernel was not already in the set, add it to the
+				// set of kernels to be processed/expanded.
+				map_put(kernel->gotos, i, kgoto);
+				kernel_set_add(kernels, kgoto);
+				kernel_set_add(processing, kgoto);
+			} else {
+				// Merge existing items/lookaheads into the existing kernel.
+				int modified = 0;
+				int j;
+				for (j = 0; j < kernel_len(kgoto); ++j) {
+					if (kernel_add(actual, kernel_at(kgoto, j))) {
+						modified = 1;
 					}
-					kernel_delete(kgoto);
+				}
+				// Mark the modified kernel for re-processing.
+				if (modified) {
+					kernel_set_add(processing, actual);
+				}
+				// Replace the duplicate kernel with the existing one.
+				if (kgoto != actual) {
 					map_put(kernel->gotos, i, actual);
+					kernel_delete(kgoto);
 				}
 			}
 		}
+
+		map_delete(gotos);
 	}
 
+	kernel_set_delete(processing);
 	return kernels;
 }
 
