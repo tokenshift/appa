@@ -8,6 +8,8 @@ type Grammar interface {
 
 	Literal(val string) Terminal
 	Regex(pattern string) Terminal
+
+	//Compile(start NonTerminal)
 }
 
 type Token interface {
